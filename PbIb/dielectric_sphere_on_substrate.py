@@ -77,7 +77,7 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
 
     spheres = []                                        #наделал сферок(чтоб каждая расчитывалась в зависимости от длины волны)
     spheres.append(
-        smuthi.particles.Sphere(position=[0, 0, 100],
+        smuthi.particles.Sphere(position=[0, 0, 100.05487],
                                 refractive_index=n,
                                 radius=100,
                                 l_max=3)
