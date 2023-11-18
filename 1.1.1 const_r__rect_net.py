@@ -1,4 +1,4 @@
-Nanachi
+
 import random
 def p(a):
     for i in a:
