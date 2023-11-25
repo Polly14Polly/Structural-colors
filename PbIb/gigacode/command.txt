@@ -1,4 +1,4 @@
 AddMaterial;glass BK-7
-OneSphere;100;100;100;0
-SimulateSpectrum;330;332;1
+RectNet
 Draw
+SimulateSpectrum;330;890;20

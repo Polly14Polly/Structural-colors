@@ -1,3 +1,4 @@
+import random
 import smuthi.simulation
 import smuthi.initial_field
 import smuthi.layers
@@ -24,8 +25,8 @@ class material:
         f = open('material.txt', 'r')  # зачитал файл
         reading = f.read()
         reading = reading.split(name)[1]
-        reading_wl = reading.split("\n")[0]
-        reading_n = reading.split("\n")[1]  # попилил строки(костыль), получил в строке два нужных массива
+        reading_wl = reading.split("\n")[1]
+        reading_n = reading.split("\n")[2]  # попилил строки(костыль), получил в строке два нужных массива
 
         data_n_wl = []  #создал два массива
         data_n = []
@@ -62,17 +63,51 @@ def search_wl(left, right, A, B, key):  # бинарный поиск с уср�
 
 
 
+def const_r_rect_net():
+    size_x = 100
+    size_y = 100
+    # размер ячейки, в которую будем помещать сферу
+    a = 20
+    b = 20
 
+    Na = size_x // a
+    Nb = size_y // b
 
+    arr = []  # относительные координаты сфер
+    for i in range(Na):
+        arr.append([])
+        for j in range(Nb):
+            arr[i].append([])
+
+            r = 8
+
+            x = random.randint(r + 1, a - r - 1)
+            y = random.randint(r + 1, b - r - 1)
+            arr[i][j].append(x)
+            arr[i][j].append(y)
+            arr[i][j].append(r)
+    # p(arr)
+    # каждая ячейка массива Na*Nb содержит в себе массив - пару чисел (координаты центра ОТНОСИТЕЛЬНО ЛЕВОГО НИЖНЕГО УГЛА) и радиус
+
+    arr1 = arr  # абсолютные координаты
+    for i in range(Na):
+        for j in range(Nb):
+            arr1[i][j][0] = arr[i][j][0] + a * i
+            arr1[i][j][1] = arr[i][j][1] + b * j
+    sprs = open('SpheresList1.txt', 'a')
+    for i in range(Na):
+        for j in range(Nb):
+            sprs.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
+    sprs.close()
 
 
 
 def Spectrum(materials, leftGran, rightGran, shag):
-    sps = open('SpheresList1.txt', 'r')
 
 
     bI = []  # массив с рассеянием
     for i in range(leftGran, rightGran, shag):  # фором пробегаюсь по всем длинам волн (i - длина волны в нм)
+        sps = open('SpheresList1.txt', 'r')
         ns = []
         for mat in materials:
             ns.append(search_wl(0, mat.length, mat.wl, mat.n, i / 1000))
@@ -104,6 +139,8 @@ def Spectrum(materials, leftGran, rightGran, shag):
 
         simulation = smuthi.simulation.Simulation(layer_system=two_layers,
                                                   particle_list=spheres,
+                                                  solver_type='gmres',
+                                                  solver_tolerance=1e-5,
                                                   initial_field=plane_wave)
 
         simulation.run()
@@ -118,6 +155,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
         print(i)  # просто вывод, чтоб следить за процессом
         print(scs)
         bI.append(scs)
+        sps.close()
     return bI
 
 
@@ -142,10 +180,16 @@ def Spectrum(materials, leftGran, rightGran, shag):
 
 
 f = open('command.txt', 'r')  # зачитал файл
+
+s = open('SpheresList1.txt', 'w')
+s.truncate()
+s.close()
+
 work = 1
 materials = []
 while (work == 1):
     cmd = f.readline();  # прочитал строку
+    cmd = cmd.replace("\n", "")
     cmds = cmd.split(";")
     i = 1
     while (i == 1):
@@ -180,8 +224,17 @@ while (work == 1):
             window = Tk()
             c = Canvas(window, width=1000, height=1000)  # Холст 1000
             c.pack()
-            c.create_oval(100, 100, 500, 500)
+            sps = open('SpheresList1.txt', 'r')
+            line = sps.readline()
+            while (line != ""):
+                c.create_oval(int(line.split(";")[0])-int(line.split(";")[2]), int(line.split(";")[1])-int(line.split(";")[2]), int(line.split(";")[0])+int(line.split(";")[2]), int(line.split(";")[1])+int(line.split(";")[2]))
+                line = sps.readline()
+            sps.close()
             window.mainloop()
+            break
+
+        if (cmds[0] == "RectNet"):                                              #придётся запоминать номера...
+            const_r_rect_net()
             break
 
         print("Something is creating script ERRORs")
