@@ -31,32 +31,19 @@ b = 8
 Na=size_x//a
 Nb=size_y//b
 
-arr=[] # относительные координаты сфер
+arr=[]
 for i in range(Na):
     arr.append([])
     for j in range (Nb):
         arr[i].append([])
-        r = 4
-        x = r
-        y = r
-        arr[i][j].append(x)
-        arr[i][j].append(y)
-        arr[i][j].append(r)
-#p(arr)
-# каждая ячейка массива Na*Nb содержит в себе массив - пару чисел (координаты центра ОТНОСИТЕЛЬНО ЛЕВОГО НИЖНЕГО УГЛА) и радиус
+        for k in range(0, 2):
+            arr[i][j].append([])
 
-arr1=arr # абсолютные координаты
+
+r=4
 for i in range(Na):
     for j in range(Nb):
-        arr1[i][j][0]=arr[i][j][0]+a*i+(-1)^j*r
-        arr1[i][j][1] = r*j*np.sqrt(3)
+        arr[i][j][0] = a*i+((-1)**j)*r/2 #сдвиг по иксу в зависимости от четности ряда
+        arr[i][j][1] = r*j*np.sqrt(3) #сдвиг по игреку на корень 3
 
-p(arr1)
-
-
-for i in arr1:
-    for j in i:
-        circ(j[0], j[1], j[2])
-
-
-window.mainloop()
+p(arr)

@@ -18,7 +18,13 @@ a=[]
 
 for i in range(0, N_y):
     y=y0+dy*i
-    a.append([])
+    arr=[]
+    if i%2==0:
+        t=N_2k_x
+    else:
+        t=N_2kp1_x
+    for j in range(t):
+
 
 
 
