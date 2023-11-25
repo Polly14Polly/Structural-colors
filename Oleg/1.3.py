@@ -47,3 +47,9 @@ for i in range(Na):
         arr[i][j][1] = r*j*np.sqrt(3) #сдвиг по игреку на корень 3
 
 p(arr)
+for i in arr:
+    for j in i:
+        circ(j[0], j[1], r)
+
+
+window.mainloop()

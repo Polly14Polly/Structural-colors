@@ -1,31 +1,49 @@
-import math
-def s(x):
-    return math.sin(x)
-def c(x):
-    return math.cos(x)
-size_x=1000
-size_y=1000
-r = 10
-N_2k_x=size_x//(2*r)
-N_2kp1_x=(size_x-r)//(2*r)
-N_y=size_y/(r*math.sqrt(3)+2*r)
+from tkinter import *
+# подготовка поля
+import numpy as np
+from tkinter import *
+window = Tk()
+c = Canvas(window,width=900, height=900) # Холст 1000
+c.pack()
+window.title('Структурка') # Заголовок
 
-dx = r*1
-dy = r*math.sqrt(3)
-x0=r
-y0=r
-a=[]
+def circ(x, y, r):
+    x1=x-r
+    x2=x+r
+    y1=y-r
+    y2=y+r
+    c.create_oval(x1, y1, x2, y2)
 
-for i in range(0, N_y):
-    y=y0+dy*i
-    arr=[]
-    if i%2==0:
-        t=N_2k_x
-    else:
-        t=N_2kp1_x
-    for j in range(t):
+import random
+def p(a):
+    for i in a:
+        for j in i:
+            print(j, end=" ")
+        print()
 
-        pass
+# задаем размеры подложки
+size_x = 800
+size_y = 800
+# размер ячейки, в которую будем помещать сферу
+a = 8
+b = 8
+
+Na=size_x//a
+Nb=size_y//b
+
+arr=[]
+for i in range(Na):
+    arr.append([])
+    for j in range (Nb):
+        arr[i].append([])
+        for k in range(0, 2):
+            arr[i][j].append([])
 
 
+r=4
+for i in range(Na):
+    for j in range(Nb):
+        arr[i][j][0] = a*i+((-1)**j)*r/2 #сдвиг по иксу в зависимости от четности ряда
+        arr[i][j][1] = r*j*np.sqrt(3) #сдвиг по игреку на корень 3
 
+p(arr)
