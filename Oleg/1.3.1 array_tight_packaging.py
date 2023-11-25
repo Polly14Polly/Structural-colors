@@ -36,7 +36,7 @@ for i in range(Na):
     arr.append([])
     for j in range (Nb):
         arr[i].append([])
-        for k in range(0, 2):
+        for k in range(0, 3):
             arr[i][j].append([])
 
 
@@ -45,5 +45,6 @@ for i in range(Na):
     for j in range(Nb):
         arr[i][j][0] = a*i+((-1)**j)*r/2 #сдвиг по иксу в зависимости от четности ряда
         arr[i][j][1] = r*j*np.sqrt(3) #сдвиг по игреку на корень 3
+        arr[i][j][2] = r
 
 p(arr)
