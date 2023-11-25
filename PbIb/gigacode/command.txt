@@ -1,4 +1,10 @@
 AddMaterial;glass BK-7
-RectNet
-Draw
-SimulateSpectrum;330;890;20
+RectNet;1000;1000;20;20;8
+SimulateSpectrum;330;890;300;save
+Clear
+RectNet;1000;1000;20;20;8
+SimulateSpectrum;330;890;300;save
+Clear
+RectNet;1000;1000;20;20;8
+SimulateSpectrum;330;890;300;save
+Clear

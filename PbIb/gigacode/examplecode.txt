@@ -1,0 +1,13 @@
+AddMaterial;glass BK-7
+OneSphere;100;100;100;0
+Draw;save
+SimulateSpectrum;330;890;300;save
+OneSphere;300;100;100;0
+Draw;save
+SimulateSpectrum;330;890;300;save
+OneSphere;100;300;100;0
+Draw;save
+SimulateSpectrum;330;890;300;save
+OneSphere;300;300;100;0
+Draw;save
+SimulateSpectrum;330;890;300;save

@@ -1,4 +1,5 @@
 import random
+import time
 import smuthi.simulation
 import smuthi.initial_field
 import smuthi.layers
@@ -14,6 +15,7 @@ import smuthi.postprocessing.far_field
 import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
 from tkinter import *
+
 
 
 
@@ -63,13 +65,7 @@ def search_wl(left, right, A, B, key):  # бинарный поиск с уср�
 
 
 
-def const_r_rect_net():
-    size_x = 100
-    size_y = 100
-    # размер ячейки, в которую будем помещать сферу
-    a = 20
-    b = 20
-
+def const_r_rect_net(size_x, size_y, a, b, r):
     Na = size_x // a
     Nb = size_y // b
 
@@ -78,8 +74,6 @@ def const_r_rect_net():
         arr.append([])
         for j in range(Nb):
             arr[i].append([])
-
-            r = 8
 
             x = random.randint(r + 1, a - r - 1)
             y = random.randint(r + 1, b - r - 1)
@@ -181,12 +175,20 @@ def Spectrum(materials, leftGran, rightGran, shag):
 
 f = open('command.txt', 'r')  # зачитал файл
 
-s = open('SpheresList1.txt', 'w')
+s = open('SpheresList1.txt', 'w') #почистил массив(текстовый файл) сфер
 s.truncate()
 s.close()
+s2 = open('output.txt', 'w')  #почистил вывод
+s2.truncate()
+s2.close()
 
+
+
+
+count = 1;
 work = 1
 materials = []
+veryNachalo = time.time()
 while (work == 1):
     cmd = f.readline();  # прочитал строку
     cmd = cmd.replace("\n", "")
@@ -200,6 +202,7 @@ while (work == 1):
 
 
         if (cmds[0] == "SimulateSpectrum"):                                         #симуляция. Вызывается так: от длины волны до длины волны с шагом
+            begin = time.time()
             y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
 
             x = []
@@ -207,12 +210,24 @@ while (work == 1):
                 x.append(i)
 
             G.plot(x, y)  # строю графек
-            G.show()
+            if (len(cmds) > 4):
+                if(cmds[4] == "save"):
+                    G.savefig(str(count) + "section.png")
+                    out = open('output.txt', 'a')
+                    vrem = time.time() - begin
+                    out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
+                    out.close()
+                    count = count + 1
+                else:
+                    G.show()
+            else:
+                G.show()
+            G.close()
             break
 
         if (cmds[0] == "OneSphere"):                                                #добавление сферы
             sprs = open('SpheresList1.txt', 'a')  # записал сферки
-            sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4])     #сфера добавляется так: x;y;r;номер материала
+            sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4]+"\n")     #сфера добавляется так: x;y;r;номер материала
             sprs.close()
             break
 
@@ -227,15 +242,32 @@ while (work == 1):
             sps = open('SpheresList1.txt', 'r')
             line = sps.readline()
             while (line != ""):
-                c.create_oval(int(line.split(";")[0])-int(line.split(";")[2]), int(line.split(";")[1])-int(line.split(";")[2]), int(line.split(";")[0])+int(line.split(";")[2]), int(line.split(";")[1])+int(line.split(";")[2]))
+                c.create_oval(int(line.split(";")[0])-int(line.split(";")[2]), int(line.split(";")[1])-int(line.split(";")[2]), int(line.split(";")[0])+int(line.split(";")[2]), int(line.split(";")[1])+int(line.split(";")[2]), fill="red")
                 line = sps.readline()
             sps.close()
-            window.mainloop()
+            if(len(cmds) > 1):
+                if(cmds[1] == "save"):
+                    window.update()
+                    c.postscript(file=str(count) + "udoli.ps", colormode='color')               #костыль - https://products.aspose.com/pdf/ru/python-net/conversion/ps-to-png/
+                else:
+                    window.mainloop()
+            else:
+                window.mainloop()
             break
 
         if (cmds[0] == "RectNet"):                                              #придётся запоминать номера...
-            const_r_rect_net()
+            const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]))
+            break
+
+        if (cmds[0] == "Clear"):  # придётся запоминать номера...
+            ssss = open('SpheresList1.txt', 'w')
+            ssss.truncate()
+            ssss.close()
             break
 
         print("Something is creating script ERRORs")
         i = 0  # почему нет switch case пришлось костылить...
+
+out = open('output.txt', 'a')
+out.write("\n Vsego proshlo" +str(time.time() - veryNachalo))
+out.close()
