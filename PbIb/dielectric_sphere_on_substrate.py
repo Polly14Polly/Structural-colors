@@ -44,7 +44,7 @@ def search_wl(left, right, A, B, key): #бинарный поиск с усре�
 
 
 f = open('material.txt', 'r')           #зачитал файл
-reading = f.read();
+reading = f.read()
 
 reading = reading.split(material_1)[1]
 reading_wl = reading.split("\n")[1]
@@ -77,7 +77,7 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
 
     spheres = []                                        #наделал сферок(чтоб каждая расчитывалась в зависимости от длины волны)
     spheres.append(
-        smuthi.particles.Sphere(position=[0, 0, 100.05487],
+        smuthi.particles.Sphere(position=[0, 0, 100],
                                 refractive_index=n,
                                 radius=100,
                                 l_max=3)
@@ -112,10 +112,10 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
 
 
 
-    """simulation = smuthi.simulation.Simulation(layer_system=two_layers,   #старый добрый кот
+    simulation = smuthi.simulation.Simulation(layer_system=two_layers,   #старый добрый кот
                                              particle_list=spheres,
                                              initial_field=plane_wave)
-    simulation.run()"""
+    simulation.run()
 
 
 
@@ -127,25 +127,25 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
     # run automatic parameter selection
     smuthi.utility.automatic_parameter_selection.select_numerical_parameters(test_balloon_simulation,
                                                                              tolerance=1e-2)'''
-    simulation = smuthi.simulation.Simulation(layer_system=two_layers,                      #спёр, горжусь этим, но не понял, что спёр...
+    '''simulation = smuthi.simulation.Simulation(layer_system=two_layers,                      #спёр, горжусь этим, но не понял, что спёр...
                                               particle_list=spheres,
                                               solver_type='gmres',
                                               solver_tolerance=1e-4,
                                               initial_field=plane_wave,
-                                              )
+                                              )'''
     #neff_max=test_balloon_simulation.neff_max,
     #neff_resolution=test_balloon_simulation.neff_resolution
     simulation.run()
 
-    # show far field
-    smuthi.postprocessing.graphical_output.show_scattering_cross_section(simulation,
+   # show far field
+    """smuthi.postprocessing.graphical_output.show_scattering_cross_section(simulation,
                                                                          show_plots=True,
                                                                          show_opts=[
                                                                              {'label': 'scattering_cross_section',
                                                                               'vmin': 1e2,  # play with these parameters
                                                                               'vmax': 1e5}],
                                                                          # to get an appealing result
-                                                                         log_scale=True)
+                                                                         log_scale=True)"""
 
 
 
