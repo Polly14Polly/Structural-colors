@@ -37,7 +37,7 @@ class Sphere:
 
 
     def create_sphere(self):
-        return smuthi.particles.Sphere(self.pos, self.refInd, self.rad, self.l_max)
+        return smuthi.particles.Sphere(self.pos, self.refInd, self.rad - 0.1, self.l_max)
 
 class SphereStructure:
     def __init__(self, geom, refractive_index, radius, l_max):
