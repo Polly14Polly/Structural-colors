@@ -12,9 +12,12 @@ screen = pygame.display.set_mode((1000, 600))
 #функция отрисовки структуры
 def draw(structures_array):
     max_radius = max_rad(structures_array)
-    max_coordinate = max_coord(structures_array)
+    max_x = max_coord(structures_array, 0)
+    max_y = max_coord(structures_array, 1)
 
-    scale = 600/(max_radius + max_coordinate)
+    sc_settings = (800, 800/(max_x*max_radius + max_radius)*(max_y*max_radius + max_radius))
+
+    screen = pygame.display.set_mode(sc_settings)
 
     # задаем цвет фона
     background_color = (0, 0, 0)  # синий
@@ -33,8 +36,8 @@ def draw(structures_array):
                 exit()
 
         for partical in structures_array:
-            pygame.draw.circle(screen, (255, 255, 255), (partical[0]*scale, partical
-                                                         [1]*scale), partical[2]*scale)
+            pygame.draw.circle(screen, (255, 255, 255), (partical[0] + sc_settings[0]/2, partical
+                                                         [1] + sc_settings[1]/2), partical[2])
 
         pygame.display.update()
 
@@ -45,10 +48,9 @@ def max_rad(arr):
         radiuses.append(element[2])
     return max(radiuses)
 
-def max_coord(arr):
+def max_coord(arr, ind):
     coords = []
     for element in arr:
-        coords.append(element[0])
-        coords.append(element[1])
+        coords.append(abs(element[ind]))
 
     return max(coords)
