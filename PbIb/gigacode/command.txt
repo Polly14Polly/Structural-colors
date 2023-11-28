@@ -1,4 +1,23 @@
 AddMaterial;glass BK-7
-OneSphere;100;100;100;0
-SimulateSpectrum;330;332;1
-Draw
+RectNet;600;600;600;600;250
+Draw;save
+SimulateSpectrum;330;890;14;save
+Clear
+RectNet;1200;1200;600;600;250
+Draw;save
+SimulateSpectrum;330;890;14;save
+Clear
+RectNet;1800;1800;600;600;250
+Draw;save
+SimulateSpectrum;330;890;14;save
+Clear
+RectNet;2400;2400;600;600;250
+Draw;save
+SimulateSpectrum;330;890;14;save
+Clear
+RectNet;12000;12000;600;600;250
+Draw;save
+SimulateSpectrum;330;890;14;save
+
+
+
