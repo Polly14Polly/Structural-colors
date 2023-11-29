@@ -7,11 +7,11 @@ def p(a):
         print()
 
 # задаем размеры подложки
-size_x=100
-size_y=100
+size_x=2000
+size_y=2000
 # размер ячейки, в которую будем помещать сферу
-a = 20
-b = 20
+a = 400
+b = 400
 
 Na=size_x//a
 Nb=size_y//b
@@ -22,7 +22,7 @@ for i in range(Na):
     for j in range (Nb):
         arr[i].append([])
 
-        r=10
+        r=100
 
         x=random.randint(r+1, a-r-1)
         y=random.randint(r+1, b-r-1)

@@ -22,11 +22,11 @@ def p(a):
         print()
 
 # задаем размеры подложки
-size_x = 800
-size_y = 800
+size_x = 2000
+size_y = 2000
 # размер ячейки, в которую будем помещать сферу
-a = 8
-b = 8
+a = 400
+b = 400
 
 Na=size_x//a
 Nb=size_y//b
@@ -40,7 +40,7 @@ for i in range(Na):
             arr[i][j].append([])
 
 
-r=4
+r=100
 for i in range(Na):
     for j in range(Nb):
         arr[i][j][0] = a*i+((-1)**j)*r/2 #сдвиг по иксу в зависимости от четности ряда

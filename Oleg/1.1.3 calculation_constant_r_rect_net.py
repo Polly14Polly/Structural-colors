@@ -14,14 +14,15 @@ import smuthi.particles
 import smuthi.postprocessing.far_field
 import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
+import random
 
 
 
 
                                 #начальные условия
-leftGran = 330                  #минимальная длина волны, нм
-rightGran = 890                 #максимальная длина волны, нм
-shag = 550                       #шаг, с коротым будут ставиться точки(длина волны, нм)
+leftGran = 325                  #минимальная длина волны, нм
+rightGran = 900                 #максимальная длина волны, нм
+shag = 25                   #шаг, с коротым будут ставиться точки(длина волны, нм)
 material_1 = "ZBLAN fluoride glass"       #добавляем материал(имя материала в файле material.txt)
 
 
@@ -59,6 +60,46 @@ for symbol in reading_n.split(","):
     data_n.append(float(symbol))
 
 
+def p(a):
+    for i in a:
+        for j in i:
+            print(j, end=" ")
+        print()
+
+
+# задаем размеры подложки
+size_x = 2000
+size_y = 2000
+# размер ячейки, в которую будем помещать сферу
+a = 400
+b = 400
+
+Na = size_x // a
+Nb = size_y // b
+
+arr = []  # относительные координаты сфер
+for i in range(Na):
+    arr.append([])
+    for j in range(Nb):
+        arr[i].append([])
+
+        r = 100
+
+        x = random.randint(r + 1, a - r - 1)
+        y = random.randint(r + 1, b - r - 1)
+        arr[i][j].append(x)
+        arr[i][j].append(y)
+        arr[i][j].append(r)
+# p(arr)
+# каждая ячейка массива Na*Nb содержит в себе массив - пару чисел (координаты центра ОТНОСИТЕЛЬНО ЛЕВОГО НИЖНЕГО УГЛА) и радиус
+
+arr1 = arr  # абсолютные координаты
+for i in range(Na):
+    for j in range(Nb):
+        arr1[i][j][0] = arr[i][j][0] + a * i
+        arr1[i][j][1] = arr[i][j][1] + b * j
+
+p(arr1)
 
 bI = [] #массив с рассеянием
 for i in range(leftGran, rightGran, shag): #фором пробегаюсь по всем длинам волн (i - длина волны в нм)
@@ -76,49 +117,10 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
 
 
     spheres = []                                        #наделал сферок(чтоб каждая расчитывалась в зависимости от длины волны)
-    import random
 
 
-    def p(a):
-        for i in a:
-            for j in i:
-                print(j, end=" ")
-            print()
 
 
-    # задаем размеры подложки
-    size_x = 200
-    size_y = 200
-    # размер ячейки, в которую будем помещать сферу
-    a = 20
-    b = 20
-
-    Na = size_x // a
-    Nb = size_y // b
-
-    arr = []  # относительные координаты сфер
-    for i in range(Na):
-        arr.append([])
-        for j in range(Nb):
-            arr[i].append([])
-
-            r = 5
-
-            x = random.randint(r + 1, a - r - 1)
-            y = random.randint(r + 1, b - r - 1)
-            arr[i][j].append(x)
-            arr[i][j].append(y)
-            arr[i][j].append(r)
-    # p(arr)
-    # каждая ячейка массива Na*Nb содержит в себе массив - пару чисел (координаты центра ОТНОСИТЕЛЬНО ЛЕВОГО НИЖНЕГО УГЛА) и радиус
-
-    arr1 = arr  # абсолютные координаты
-    for i in range(Na):
-        for j in range(Nb):
-            arr1[i][j][0] = arr[i][j][0] + a * i
-            arr1[i][j][1] = arr[i][j][1] + b * j
-
-    p(arr1)
     for i in range(len(arr1)):
         for j in range(len(arr1[i])):
             spheres.append(
@@ -148,40 +150,17 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
                                               solver_type='gmres',
                                               solver_tolerance=1e-5,
                                               initial_field=plane_wave)
-    simulation.run()
 
 
 
 
-    '''test_balloon_simulation = smuthi.simulation.Simulation(layer_system=two_layers,             код, который убивает все подсчёты
-                                                           particle_list=spheres,
-                                                           initial_field=plane_wave)
 
-    # run automatic parameter selection
-    smuthi.utility.automatic_parameter_selection.select_numerical_parameters(test_balloon_simulation,
-                                                                             tolerance=1e-2)'''
-    '''simulation = smuthi.simulation.Simulation(layer_system=two_layers,                      #спёр, горжусь этим, но не понял, что спёр...
-                                              particle_list=spheres,
-                                              solver_type='gmres',
-                                              solver_tolerance=1e-4,
-                                              initial_field=plane_wave,
-                                              )'''
+
     #neff_max=test_balloon_simulation.neff_max,
     #neff_resolution=test_balloon_simulation.neff_resolution
     simulation.run()
 
    # show far field
-    """smuthi.postprocessing.graphical_output.show_scattering_cross_section(simulation,
-                                                                         show_plots=True,
-                                                                         show_opts=[
-                                                                             {'label': 'scattering_cross_section',
-                                                                              'vmin': 1e2,  # play with these parameters
-                                                                              'vmax': 1e5}],
-                                                                         # to get an appealing result
-                                                                         log_scale=True)"""
-
-
-
 
 
 
