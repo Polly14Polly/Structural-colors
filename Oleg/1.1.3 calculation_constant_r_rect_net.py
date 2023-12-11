@@ -68,8 +68,8 @@ def p(a):
 
 
 # задаем размеры подложки
-size_x = 2000
-size_y = 2000
+size_x = 8000
+size_y = 8000
 # размер ячейки, в которую будем помещать сферу
 a = 400
 b = 400
@@ -179,6 +179,10 @@ x = []
 for i in range(leftGran, rightGran, shag): #массив иксов, чтоб график построить
     x.append(i)
 
+f = open("file1.txt", "w")
+for i in range(len(x)):
+    f.write(x[i], " ",  bI[i])
+f.close()
 
 G.plot(x, bI) #строю графек
 G.show()
