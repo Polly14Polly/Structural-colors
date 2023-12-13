@@ -221,7 +221,7 @@ while (work == 1):
                     G.savefig(str(countSim) + "section.png")
                 else:
                     if(cmds[4] == "SavePlot"):
-                        plot = open(str(countPLot) + 'plot.txt', 'a')
+                        plot = open(str(countPLot) + 'plot.txt', 'w')
                         countPLot = countPLot + 1
                         for i in range(0, len(x), 1):
                             plot.write(str(x[i]) + " " + str(y[i]) + "\n")
