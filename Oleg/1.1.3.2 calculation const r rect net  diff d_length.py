@@ -20,17 +20,8 @@ import random
 
 
                                 #начальные условия
-leftGran = 380                  #минимальная длина волны, нм
-rightGran = 780
-
-diapasons=[ [350, 525, 2], [530, 600, 2],[600, 650, 2] ,[650, 690, 2], [700, 780, 2]]
-arr_waves = []
-for i in diapasons:
-    for j in range(i[0], i[1], i[2]):
-        arr_waves.append(j)
-
-
-                #максимальная длина волны, нм
+leftGran = 325                  #минимальная длина волны, нм
+rightGran = 900                 #максимальная длина волны, нм
 shag = 25                   #шаг, с коротым будут ставиться точки(длина волны, нм)
 material_1 = "ZBLAN fluoride glass"       #добавляем материал(имя материала в файле material.txt)
 
@@ -77,11 +68,11 @@ def p(a):
 
 
 # задаем размеры подложки
-size_x = 4000
-size_y = 4000
+size_x = 800
+size_y = 800
 # размер ячейки, в которую будем помещать сферу
-a = 250
-b = 250
+a = 400
+b = 400
 
 Na = size_x // a
 Nb = size_y // b
@@ -185,15 +176,20 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
 
 
 x = []
-for i in range(leftGran, rightGran, shag): #массив иксов, чтоб график построить
-    x.append(i)
+leftGran = 380                  #минимальная длина волны, нм
+rightGran = 780
 
-f = open("file1.txt", "a")
-f.write(str(size_x)+" "+str( size_y)+" "+str(a)+" "+str(b)+" "+str((size_y//b)*(size_x//a))+str(r)+"\n")
+diapasons=[ [350, 525, 2], [530, 600, 10],[600, 650, 2] ,[650, 690, 2], [700, 780, 10]]
+arr_waves = []
+for i in diapasons:
+    for j in range(i[0], i[1], i[2]):
+        arr_waves.append(j)
+
+f = open("file1.txt", "w")
 for i in range(len(x)):
-    f.write(str(x[i])+" " + str(bI[i])+"\n")
+    f.write(arr_waves[i], " ",  bI[i])
 f.close()
 
-G.plot(x, bI) #строю графек
+G.plot(arr_waves, bI) #строю графек
 G.show()
 
