@@ -16,9 +16,6 @@ import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
 from tkinter import *
 
-from aspose.pdf import PsLoadOptions
-from aspose.pdf.devices import PngDevice
-
 
 class material:
     def __init__(self, name):

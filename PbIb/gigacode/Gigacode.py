@@ -1,3 +1,4 @@
+import math
 import random
 import time
 import smuthi.simulation
@@ -20,26 +21,37 @@ from aspose.pdf import PsLoadOptions
 from aspose.pdf.devices import PngDevice
 
 
+countSim = 1
+countDraw = 1
+countOwl = 1
+countPLot = 1
+work = 1
+materials = []
+veryNachalo = time.time()
+
+
+
+
 class material:
     def __init__(self, name):
         self.name = name
-
-        f = open('material.txt', 'r')  # зачитал файл
-        reading = f.read()
-        reading = reading.split(name)[1]
-        reading_wl = reading.split("\n")[1]
-        reading_n = reading.split("\n")[2]  # попилил строки(костыль), получил в строке два нужных массива
-
-        data_n_wl = []  #создал два массива
+        f = open('materials/' + name +'.txt', 'r')  # зачитал файл
+        data_n_wl = []  # создал два массива
         data_n = []
+        data_n_j = []
 
-        for symbol1 in reading_wl.split(","):  # два массива data_n_wl с длинами волн и data_n с значениями коэффициента преломления
-            data_n_wl.append(float(symbol1))  # в этом куске кода я заполняю эти массивы, читая reading
-        for symbol2 in reading_n.split(","):
-            data_n.append(float(symbol2))
+        reading = f.readline()
+        while reading != " ":
+            reading = reading.strip()
+            reading.replace('.', ',')
+            data_n_wl.append(float(reading.split(" ")[0]))
+            data_n.append(float(reading.split(" ")[1]))
+            data_n_j.append(float(reading.split(" ")[2]))
+            reading = f.readline()
 
         self.n = data_n
         self.wl = data_n_wl
+        self.j = data_n_j
         self.length = len(data_n)
 
 
@@ -88,7 +100,7 @@ def const_r_rect_net(size_x, size_y, a, b, r):
         for j in range(Nb):
             arr1[i][j][0] = arr[i][j][0] + a * i
             arr1[i][j][1] = arr[i][j][1] + b * j
-    sprs = open('SpheresList1.txt', 'a')
+    sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')
     for i in range(Na):
         for j in range(Nb):
             sprs.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
@@ -101,10 +113,14 @@ def Spectrum(materials, leftGran, rightGran, shag):
 
     bI = []  # массив с рассеянием
     for i in range(leftGran, rightGran, shag):  # фором пробегаюсь по всем длинам волн (i - длина волны в нм)
-        sps = open('SpheresList1.txt', 'r')
+        N = 0
+        R = 0
         ns = []
+        js = []
+        sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
         for mat in materials:
             ns.append(search_wl(0, mat.length, mat.wl, mat.n, i / 1000))
+            js.append(search_wl(0, mat.length, mat.wl, mat.j, i / 1000))
 
         two_layers = smuthi.layers.LayerSystem(thicknesses=[0, 0],  # просто стандартные два полупространства
                                                refractive_indices=[1.52, 1])
@@ -115,9 +131,11 @@ def Spectrum(materials, leftGran, rightGran, shag):
         spheres = []  # наделал сферок(чтоб каждая расчитывалась в зависимости от длины волны)
         line = sps.readline()
         while(line != ""):
+            N = N+1
+            R = int(line.split(";")[2])
             spheres.append(
                 smuthi.particles.Sphere(position=[int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])],
-                                        refractive_index=ns[int(line.split(";")[3])],
+                                        refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])],
                                         radius=int(line.split(";")[2]),
                                         l_max=3)
             )
@@ -144,50 +162,13 @@ def Spectrum(materials, leftGran, rightGran, shag):
                                                 particle_list=spheres,
                                                 layer_system=two_layers)
         scs = scs / 1e6
-
+        scs = scs / (N * math.pi * R * R)
 
         print(i)  # просто вывод, чтоб следить за процессом
         print(scs)
         bI.append(scs)
         sps.close()
     return bI
-
-'''def convert_PS_to_PNG(infile, outfile):
-
-    path_infile = dataDir + infile
-
-    options = PsLoadOptions()
-    options.SupressErrors = True
-    # Open .ps document with created load options
-    document = Document(path_infile, options)
-
-    # Create Resolution object
-
-    resolution = Resolution(300)
-
-    device = PngDevice(resolution)
-
-    pageCount = 1
-
-    while pageCount <= document.Pages.Count:
-        imageStream = FileStream(self.dataDir + outfile + str(pageCount) + "_out.png", FileMode.Create)
-
-        # Convert a particular page and save the image to stream
-
-        device.Process(document.Pages[pageCount], imageStream)
-
-        # Close stream
-
-        imageStream.Close()
-        pageCount = pageCount + 1
-
-    print(infile + " converted into " + outfile)'''
-
-
-
-
-
-
 
 
 
@@ -196,7 +177,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
 
 f = open('command.txt', 'r')  # зачитал файл
 
-s = open('SpheresList1.txt', 'w') #почистил массив(текстовый файл) сфер
+s = open('SpheresList' + str(countOwl) + '.txt', 'w') #почистил массив(текстовый файл) сфер
 s.truncate()
 s.close()
 s2 = open('output.txt', 'w')  #почистил вывод
@@ -206,11 +187,7 @@ s2.close()
 
 
 
-countSim = 1;
-countDraw = 1;
-work = 1
-materials = []
-veryNachalo = time.time()
+
 while (work == 1):
     cmd = f.readline();  # прочитал строку
     cmd = cmd.replace("\n", "")
@@ -232,23 +209,32 @@ while (work == 1):
                 x.append(i)
 
             G.plot(x, y)  # строю графек
+
+            out = open('output.txt', 'a')
+            vrem = time.time() - begin
+            out.write("\n" + str(countSim) + ") Proshlo " + str(vrem) + " secund\n")
+            countSim = countSim + 1
+            out.close()
+
             if (len(cmds) > 4):
-                if(cmds[4] == "save"):
+                if(cmds[4] == "Save"):
                     G.savefig(str(countSim) + "section.png")
-                    out = open('output.txt', 'a')
-                    vrem = time.time() - begin
-                    out.write("\n" + str(countSim) + ") Proshlo " + str(vrem) + " secund\n")
-                    out.close()
-                    countSim = countSim + 1
                 else:
-                    G.show()
+                    if(cmds[4] == "SavePlot"):
+                        plot = open(str(countPLot) + 'plot.txt', 'w')
+                        countPLot = countPLot + 1
+                        for i in range(0, len(x), 1):
+                            plot.write(str(x[i]) + " " + str(y[i]) + "\n")
+                        plot.close()
+                    else:
+                        G.show()
             else:
                 G.show()
             G.close()
             break
 
         if (cmds[0] == "OneSphere"):                                                #добавление сферы
-            sprs = open('SpheresList1.txt', 'a')  # записал сферки
+            sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')  # записал сферки
             sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4]+"\n")     #сфера добавляется так: x;y;r;номер материала
             sprs.close()
             break
@@ -261,7 +247,7 @@ while (work == 1):
             window = Tk()
             c = Canvas(window, width=1920, height=1080)  # Холст 1000
             c.pack()
-            sps = open('SpheresList1.txt', 'r')
+            sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
             line = sps.readline()
             while (line != ""):
                 c.create_oval(int(line.split(";")[0])/20-int(line.split(";")[2])/20, int(line.split(";")[1])/20-int(line.split(";")[2])/20, int(line.split(";")[0])/20+int(line.split(";")[2])/20, int(line.split(";")[1])/20+int(line.split(";")[2])/20, fill="red")
@@ -283,10 +269,15 @@ while (work == 1):
             break
 
         if (cmds[0] == "Clear"):  # придётся запоминать номера...
-            ssss = open('SpheresList1.txt', 'w')
+            ssss = open('SpheresList' + str(countOwl) + '.txt', 'w')
             ssss.truncate()
             ssss.close()
             break
+
+        if (cmds[0] == "Owl"):  # придётся запоминать номера...
+            countOwl = countOwl + 1
+            break
+
 
         print("Something is creating script ERRORs")
         i = 0  # почему нет switch case пришлось костылить...
