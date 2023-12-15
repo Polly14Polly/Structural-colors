@@ -179,7 +179,7 @@ x = []
 for i in range(leftGran, rightGran, shag): #массив иксов, чтоб график построить
     x.append(i)
 
-f = open("file1.txt", "w")
+f = open("results/1.1 constant r rect net/file1.txt", "w")
 for i in range(len(x)):
     f.write(str(x[i])+ " "+str( bI[i]))
 f.close()

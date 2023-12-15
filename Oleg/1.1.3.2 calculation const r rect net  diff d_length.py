@@ -185,7 +185,7 @@ for i in diapasons:
     for j in range(i[0], i[1], i[2]):
         arr_waves.append(j)
 
-f = open("file1.txt", "w")
+f = open("results/1.1 constant r rect net/file1.txt", "w")
 for i in range(len(x)):
     f.write(arr_waves[i], " ",  bI[i])
 f.close()
