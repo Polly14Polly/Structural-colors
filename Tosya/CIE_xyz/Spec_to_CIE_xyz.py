@@ -1,6 +1,5 @@
 import numpy
 import pandas
-import colour
 
 #Результаты SMUTHI
 S = []
@@ -25,6 +24,12 @@ def mult_integral(delta, *args):
 
     return sum(mult_fun)*delta
 
+def XYZ2xy(xyz):
+    x = xyz[0]
+    y = xyz[1]
+    s = sum(xyz)
+    return (x/s, y/s)
+
 
 get_plot_from_file()
 
@@ -39,7 +44,7 @@ y_ = y_.iloc[1:82, 1]
 z_ = z_.iloc[1:82, 1]
 
 #Вычисление коэффициента
-N = mult_integral(5, x_.tolist(), S) + mult_integral(5, y_.tolist(), S) + mult_integral(5, z_.tolist(), S)
+N = mult_integral(5, y_.tolist(), S)
 
 print(N)
 
@@ -50,6 +55,6 @@ Z = (1/N)*mult_integral(5, z_.tolist(), S)
 
 
 print(f"{X} {Y} {Z}")
-xy_r = colour.XYZ_to_xy((X, Y, Z))
+xy_r = XYZ2xy((X, Y, Z))
 print(xy_r)
 
