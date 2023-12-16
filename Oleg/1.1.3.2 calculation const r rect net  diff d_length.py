@@ -74,6 +74,91 @@ size_y = 800
 a = 400
 b = 400
 
+import numpy as np
+import bisect
+import smuthi.simulation
+import smuthi.initial_field
+import smuthi.layers
+import smuthi.particles
+import smuthi.postprocessing.far_field as ff
+import matplotlib.pyplot as G
+import numpy as np
+import smuthi.simulation
+import smuthi.initial_field
+import smuthi.layers
+import smuthi.particles
+import smuthi.postprocessing.far_field
+import smuthi.postprocessing.graphical_output
+import smuthi.utility.automatic_parameter_selection
+import random
+
+
+
+
+                                #начальные условия
+leftGran = 380                  #минимальная длина волны, нм
+rightGran = 780
+
+diapasons=[ [350, 525, 2], [530, 600, 2],[600, 650, 2] ,[650, 690, 2], [700, 780, 2]]
+arr_waves = []
+for i in diapasons:
+    for j in range(i[0], i[1], i[2]):
+        arr_waves.append(j)
+
+
+                #максимальная длина волны, нм
+shag = 25                   #шаг, с коротым будут ставиться точки(длина волны, нм)
+material_1 = "ZBLAN fluoride glass"       #добавляем материал(имя материала в файле material.txt)
+
+
+
+def search_wl(left, right, A, B, key): #бинарный поиск с усреднением относительно соседних
+    if right > left + 1:
+        middle = int((left + right) / 2)
+        if(A[middle] == key):
+            return B[middle]
+        if A[middle] > key:
+            return search_wl(left, middle, A, B, key)
+        else:
+            return search_wl(middle, right, A, B, key)
+    else:
+        return (key - A[left])/ (A[right]-A[left]) * (B[right]-B[left])+B[left]
+
+
+
+
+
+
+f = open('material.txt', 'r')           #зачитал файл
+reading = f.read()
+
+reading = reading.split(material_1)[1]
+reading_wl = reading.split("\n")[1]
+reading_n = reading.split("\n")[2]      #попилил строки(костыль), получил в строке два нужных массива
+
+data_n_wl = [] #создал два массива
+data_n = []
+
+for symbol in reading_wl.split(","):                # два массива data_n_wl с длинами волн и data_n с значениями коэффициента преломления
+    data_n_wl.append(float(symbol))                 #в этом куске кода я заполняю эти массивы, читая reading
+for symbol in reading_n.split(","):
+    data_n.append(float(symbol))
+
+
+def p(a):
+    for i in a:
+        for j in i:
+            print(j, end=" ")
+        print()
+
+
+# задаем размеры подложки
+size_x = 1000
+size_y = 1000
+# размер ячейки, в которую будем помещать сферу
+a = 250
+b = 250
+
 Na = size_x // a
 Nb = size_y // b
 
@@ -176,20 +261,15 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
 
 
 x = []
-leftGran = 380                  #минимальная длина волны, нм
-rightGran = 780
+for i in range(leftGran, rightGran, shag): #массив иксов, чтоб график построить
+    x.append(i)
 
-diapasons=[ [350, 525, 2], [530, 600, 10],[600, 650, 2] ,[650, 690, 2], [700, 780, 10]]
-arr_waves = []
-for i in diapasons:
-    for j in range(i[0], i[1], i[2]):
-        arr_waves.append(j)
-
-f = open("results/1.1 constant r rect net/file1.txt", "w")
+f = open("results/1.1 constant r rect net/file1.txt", "a")
+f.write(str(size_x)+" "+str( size_y)+" "+str(a)+" "+str(b)+" "+str((size_y//b)*(size_x//a))+str(r)+"\n")
 for i in range(len(x)):
-    f.write(arr_waves[i], " ",  bI[i])
+    f.write(str(x[i])+" " + str(bI[i])+"\n")
 f.close()
 
-G.plot(arr_waves, bI) #строю графек
+G.plot(x, bI) #строю графек
 G.show()
 

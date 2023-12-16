@@ -180,6 +180,7 @@ for i in range(leftGran, rightGran, shag): #массив иксов, чтоб г
     x.append(i)
 
 f = open("results/1.1 constant r rect net/file1.txt", "w")
+f.write(str(size_x)+" "+str( size_y)+" "+str(a)+" "+str(b)+" "+str((size_y//b)*(size_x//a))+str(r)+"\n")
 for i in range(len(x)):
     f.write(str(x[i])+ " "+str( bI[i]))
 f.close()
