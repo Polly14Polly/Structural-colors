@@ -32,23 +32,24 @@ veryNachalo = time.time()
 
 
 
-class material:
+class Material:
     def __init__(self, name):
         self.name = name
-        f = open('materials/' + name +'.txt', 'r')  # зачитал файл
+        read = open('materials/' + name +'.txt', 'r')  # зачитал файл
+
         data_n_wl = []  # создал два массива
         data_n = []
         data_n_j = []
 
-        reading = f.readline()
-        while reading != " ":
+        reading = read.readline()
+        while reading != " " and reading != "":
             reading = reading.strip()
             reading.replace('.', ',')
             data_n_wl.append(float(reading.split(" ")[0]))
             data_n.append(float(reading.split(" ")[1]))
             data_n_j.append(float(reading.split(" ")[2]))
-            reading = f.readline()
-
+            reading = read.readline()
+        read.close()
         self.n = data_n
         self.wl = data_n_wl
         self.j = data_n_j
@@ -100,11 +101,11 @@ def const_r_rect_net(size_x, size_y, a, b, r):
         for j in range(Nb):
             arr1[i][j][0] = arr[i][j][0] + a * i
             arr1[i][j][1] = arr[i][j][1] + b * j
-    sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
     for i in range(Na):
         for j in range(Nb):
-            sprs.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
-    sprs.close()
+            spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
+    spres.close()
 
 
 
@@ -162,7 +163,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
                                                 particle_list=spheres,
                                                 layer_system=two_layers)
         scs = scs / 1e6
-        scs = scs / (N * math.pi * R * R)
+        scs = scs / (3000 * 3000)
 
         print(i)  # просто вывод, чтоб следить за процессом
         print(scs)
@@ -188,19 +189,19 @@ s2.close()
 
 
 
-while (work == 1):
+while work == 1:
     cmd = f.readline();  # прочитал строку
     cmd = cmd.replace("\n", "")
     cmds = cmd.split(";")
     i = 1
-    while (i == 1):
+    while i == 1:
 
-        if (cmds[0] == ""):  # конец программы
+        if cmds[0] == "":  # конец программы
             work = 0
             break
 
 
-        if (cmds[0] == "SimulateSpectrum"):                                         #симуляция. Вызывается так: от длины волны до длины волны с шагом
+        if cmds[0] == "SimulateSpectrum":                                         #симуляция. Вызывается так: от длины волны до длины волны с шагом
             begin = time.time()
             y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
 
@@ -216,8 +217,8 @@ while (work == 1):
             countSim = countSim + 1
             out.close()
 
-            if (len(cmds) > 4):
-                if(cmds[4] == "Save"):
+            if len(cmds) > 4:
+                if cmds[4] == "Save":
                     G.savefig(str(countSim) + "section.png")
                 else:
                     if(cmds[4] == "SavePlot"):
@@ -233,28 +234,28 @@ while (work == 1):
             G.close()
             break
 
-        if (cmds[0] == "OneSphere"):                                                #добавление сферы
+        if cmds[0] == "OneSphere":                                                #добавление сферы
             sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')  # записал сферки
             sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4]+"\n")     #сфера добавляется так: x;y;r;номер материала
             sprs.close()
             break
 
-        if (cmds[0] == "AddMaterial"):                                              #придётся запоминать номера...
-            materials.append(material(cmds[1]))
+        if cmds[0] == "AddMaterial":                                              #придётся запоминать номера...
+            materials.append(Material(cmds[1]))
             break
 
-        if (cmds[0] == "Draw"):
+        if cmds[0] == "Draw":
             window = Tk()
             c = Canvas(window, width=1920, height=1080)  # Холст 1000
             c.pack()
             sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
             line = sps.readline()
-            while (line != ""):
+            while line != "":
                 c.create_oval(int(line.split(";")[0])/20-int(line.split(";")[2])/20, int(line.split(";")[1])/20-int(line.split(";")[2])/20, int(line.split(";")[0])/20+int(line.split(";")[2])/20, int(line.split(";")[1])/20+int(line.split(";")[2])/20, fill="red")
                 line = sps.readline()
             sps.close()
-            if(len(cmds) > 1):
-                if(cmds[1] == "save"):
+            if len(cmds) > 1:
+                if cmds[1] == "save":
                     window.update()                                                                 # pip install aspose-pdf
                     c.postscript(file=str(countDraw) + "udoli.ps", colormode='color')               #костыль - https://products.aspose.com/pdf/ru/python-net/conversion/ps-to-png/
                     countDraw = countDraw + 1
@@ -264,17 +265,17 @@ while (work == 1):
                 window.mainloop()
             break
 
-        if (cmds[0] == "RectNet"):                                              #придётся запоминать номера...
+        if cmds[0] == "RectNet":                                              #придётся запоминать номера...
             const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]))
             break
 
-        if (cmds[0] == "Clear"):  # придётся запоминать номера...
+        if cmds[0] == "Clear":  # придётся запоминать номера...
             ssss = open('SpheresList' + str(countOwl) + '.txt', 'w')
             ssss.truncate()
             ssss.close()
             break
 
-        if (cmds[0] == "Owl"):  # придётся запоминать номера...
+        if cmds[0] == "Owl":  # придётся запоминать номера...
             countOwl = countOwl + 1
             break
 

@@ -1,6 +1,6 @@
 Clear
 SO NO CHI NO SA DA MEE
-AddMaterial;TiO2_Sarkar
+AddMaterial;CdS_Treharne
 RectNet;8000;8000;800;800;390
-SimulateSpectrum;380;781;5;SavePlot
+SimulateSpectrum;380;781;20;SavePlot
 Owl
