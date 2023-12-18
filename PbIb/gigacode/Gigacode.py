@@ -21,7 +21,7 @@ from aspose.pdf import PsLoadOptions
 from aspose.pdf.devices import PngDevice
 
 
-countSim = 1
+countSim = 0
 countDraw = 1
 countOwl = 1
 countPLot = 1
@@ -220,15 +220,13 @@ while work == 1:
             if len(cmds) > 4:
                 if cmds[4] == "Save":
                     G.savefig(str(countSim) + "section.png")
+                    plot = open(str(countPLot) + 'plot.txt', 'w')
+                    countPLot = countPLot + 1
+                    for i in range(0, len(x), 1):
+                        plot.write(str(x[i]) + " " + str(y[i]) + "\n")
+                    plot.close()
                 else:
-                    if(cmds[4] == "SavePlot"):
-                        plot = open(str(countPLot) + 'plot.txt', 'w')
-                        countPLot = countPLot + 1
-                        for i in range(0, len(x), 1):
-                            plot.write(str(x[i]) + " " + str(y[i]) + "\n")
-                        plot.close()
-                    else:
-                        G.show()
+                    G.show()
             else:
                 G.show()
             G.close()
