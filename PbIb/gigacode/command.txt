@@ -1,16 +1,6 @@
 Clear
 SO NO CHI NO SA DA MEE
 AddMaterial;TiO2_Sarkar
-RectNet;2200;2200;220;220;95
-SimulateSpectrum;380;781;10;Save
-Owl
-
-RectNet;2400;2400;240;240;105
-SimulateSpectrum;380;781;10;Save
-Owl
-RectNet;2600;2600;260;260;115
-SimulateSpectrum;380;781;10;Save
-Owl
 RectNet;2800;2800;280;280;125
 SimulateSpectrum;380;781;10;Save
 Owl
