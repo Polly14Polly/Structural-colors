@@ -29,6 +29,7 @@ work = 1
 materials = []
 veryNachalo = time.time()
 
+norm = 0
 
 
 
@@ -76,11 +77,42 @@ def search_wl(left, right, A, B, key):  # бинарный поиск с уср�
     else:
         return (key - A[left]) / (A[right] - A[left]) * (B[right] - B[left]) + B[left]
 
+def thights(size_x, size_y, r, mat):
+    Na = size_x // (2*r)
+    Nb = size_y // (2*r)
+    norm = size_x*size_y
+
+    arr = []  # относительные координаты сфер
+    for i in range(Na):
+        arr.append([])
+        for j in range(Nb):
+            arr[i].append([])
+
+            x = r
+            y = r
+            arr[i][j].append(x)
+            arr[i][j].append(y)
+            arr[i][j].append(r)
+    # p(arr)
+    # каждая ячейка массива Na*Nb содержит в себе массив - пару чисел (координаты центра ОТНОСИТЕЛЬНО ЛЕВОГО НИЖНЕГО УГЛА) и радиус
+
+    arr1 = arr  # абсолютные координаты
+    for i in range(Na):
+        for j in range(Nb):
+            arr1[i][j][0] = arr[i][j][0] + 2 * r * i
+            arr1[i][j][1] = arr[i][j][1] + 2 * r * j
+    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    for i in range(Na):
+        for j in range(Nb):
+            spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + str(mat)+ "\n")
+    spres.close()
+    return norm
 
 
 def const_r_rect_net(size_x, size_y, a, b, r):
     Na = size_x // a
     Nb = size_y // b
+    norm = size_x*size_y
 
     arr = []  # относительные координаты сфер
     for i in range(Na):
@@ -106,6 +138,7 @@ def const_r_rect_net(size_x, size_y, a, b, r):
         for j in range(Nb):
             spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
     spres.close()
+    return norm
 
 
 
@@ -163,7 +196,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
                                                 particle_list=spheres,
                                                 layer_system=two_layers)
         scs = scs / 1e6
-        scs = scs / (3000 * 3000)
+        scs = scs / norm
 
         print(i)  # просто вывод, чтоб следить за процессом
         print(scs)
@@ -264,7 +297,11 @@ while work == 1:
             break
 
         if cmds[0] == "RectNet":                                              #придётся запоминать номера...
-            const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]))
+            norm = const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]))
+            break
+
+        if cmds[0] == "ThightsRectNet":                                              #придётся запоминать номера...
+            norm = thights(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]))
             break
 
         if cmds[0] == "Clear":  # придётся запоминать номера...
@@ -272,6 +309,11 @@ while work == 1:
             ssss.truncate()
             ssss.close()
             break
+
+        if cmds[0] == "Podstilka":                                              #придётся запоминать номера...
+            podstilka = cmds[1]
+            break
+
 
         if cmds[0] == "Owl":  # придётся запоминать номера...
             countOwl = countOwl + 1
