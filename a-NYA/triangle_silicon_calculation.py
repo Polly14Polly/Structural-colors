@@ -48,17 +48,20 @@ reading = f.read()
 
 data_n_wl = [] #создал два массива
 data_n = []
+data_ni = []
 
 z = 1
 
 for symbol1 in reading.split("\n"):
  for symbol in symbol1.split("\t"):
-   if (z % 2 == 1):
-      data_n_wl.append(float(symbol))  #добавляю поочередно длину волны и n
-      z = z + 1
-   else:
-      data_n.append(float(symbol))
-      z = z + 1
+     if (z % 3 == 0):
+         data_n_wl.append(float(symbol))  #добавляю поочередно длину волны и n
+     elif(z % 3 == 1):
+         data_n.append(float(symbol))
+     else:
+         data_ni.append(float(symbol))
+     z = z + 1
+
 
 # задаем размеры подложки
 size_x = 1800
@@ -90,10 +93,14 @@ for i in range(Na):
 bI = [] #массив с рассеянием
 for i in range(leftGran, rightGran, shag): #фором пробегаюсь по всем длинам волн (i - длина волны в нм)
 
-    n = search_wl(0, len(data_n), data_n_wl, data_n, i/1000) #заранее считаю коэффициент преломления для материала 1
+    n_1 = search_wl(0, len(data_n), data_n_wl, data_n, i / 1000)  # заранее считаю коэффициент преломления для материала 1
+    ni_1 = search_wl(0, len(data_ni), data_n_wl, data_ni,
+                   i / 1000)  # заранее считаю коэффициент преломления для материала 1
+    n_2 = search_wl(0, len(data_n), data_n_wl, data_n, i/1000) #заранее считаю коэффициент преломления для материала 1
+    ni_2 = search_wl(0, len(data_ni), data_n_wl, data_ni, i/1000) #заранее считаю коэффициент преломления для материала 1
 
     two_layers = smuthi.layers.LayerSystem(thicknesses=[0, 0],          # просто стандартные два полупространства
-                                           refractive_indices=[n, 1])
+                                           refractive_indices=[n_1+ni_1*1j, 1])
 
 
 
@@ -106,7 +113,7 @@ for i in range(leftGran, rightGran, shag): #фором пробегаюсь по
         for j in range(len(arr[k])):
             spheres.append(
                 smuthi.particles.Sphere(position=[arr[k][j][0], arr[k][j][1], 100],
-                                refractive_index = n,
+                                refractive_index = n_2+ni_2*1j,
                                 radius = 100,
                                 l_max = 3)
                           )
