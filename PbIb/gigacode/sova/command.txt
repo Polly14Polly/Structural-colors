@@ -1,11 +1,11 @@
 Clear
 AddMaterial;Si_Vuye_20C
 AddMaterial;SiO2_Gao
-ThightsRectNet;425;425;85;0
+ThightsRectNet;850;850;85;0
 Podstilka;1
 SimulateSpectrum;380;781;10;Save
 Owl
 Clear
-ThightsRectNet;425;425;85;1
+ThightsRectNet;850;850;85;1
 Podstilka;0
 SimulateSpectrum;380;781;10;Save
