@@ -1,4 +1,3 @@
-import math
 import random
 import time
 import smuthi.simulation
@@ -17,8 +16,6 @@ import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
 from tkinter import *
 
-from aspose.pdf import PsLoadOptions
-from aspose.pdf.devices import PngDevice
 
 
 countSim = 0
@@ -76,6 +73,7 @@ def search_wl(left, right, A, B, key):  # бинарный поиск с уср�
             return search_wl(middle, right, A, B, key)
     else:
         return (key - A[left]) / (A[right] - A[left]) * (B[right] - B[left]) + B[left]
+
 
 def thights(size_x, size_y, r, mat):
     Na = size_x // (2*r)
@@ -139,7 +137,6 @@ def const_r_rect_net(size_x, size_y, a, b, r):
             spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
     spres.close()
     return norm
-
 
 
 def Spectrum(materials, leftGran, rightGran, shag):
@@ -233,7 +230,6 @@ while work == 1:
             work = 0
             break
 
-
         if cmds[0] == "SimulateSpectrum":                                         #симуляция. Вызывается так: от длины волны до длины волны с шагом
             begin = time.time()
             y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
@@ -319,10 +315,9 @@ while work == 1:
             countOwl = countOwl + 1
             break
 
-
         print("Something is creating script ERRORs")
         i = 0  # почему нет switch case пришлось костылить...
 
-out = open('output.txt', 'a')
+out = open('output.txt', 'a')                                   #отчёт о времени
 out.write("\n Vsego proshlo " +str(time.time() - veryNachalo))
 out.close()
