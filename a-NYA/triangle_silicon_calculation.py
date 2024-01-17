@@ -154,5 +154,5 @@ for i in range(len(x)):
 f.close()
 
 G.plot(x, bI)  #строю графек
-G.show()ей
+G.show()
 
