@@ -183,7 +183,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
         simulation = smuthi.simulation.Simulation(layer_system=two_layers,
                                                   particle_list=spheres,
                                                   solver_type='gmres',
-                                                  solver_tolerance=1e-5,
+                                                  solver_tolerance=1e-7,
                                                   initial_field=plane_wave)
 
         simulation.run()
@@ -192,7 +192,6 @@ def Spectrum(materials, leftGran, rightGran, shag):
         scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
                                                 particle_list=spheres,
                                                 layer_system=two_layers)
-        scs = scs / 1e6
         scs = scs / norm
 
         print(i)  # просто вывод, чтоб следить за процессом
