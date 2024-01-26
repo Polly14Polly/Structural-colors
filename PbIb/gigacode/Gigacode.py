@@ -171,6 +171,33 @@ def full_random(n, a, b, r, dr, mat):
     return norm
 
 
+def triangle_thights(size_x, size_y, a, b, r, mat):
+    Na = size_x // a
+    Nb = size_y // b
+    norm = size_x*size_y
+    arr = []
+    for i in range(Na):
+        arr.append([])
+        for j in range(Nb):
+            arr[i].append([])
+            for k in range(0, 2):
+                arr[i][j].append([])
+
+    for i in range(Na):
+        for j in range(Nb):
+            arr[i][j][0] = a * i + ((-1) ** (j)) * r / 2  # сдвиг по иксу в зависимости от четности ряда
+            arr[i][j][1] = r * j * np.sqrt(3)  # сдвиг по игреку на корень 3
+
+    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    for i in range(Na):
+        for j in range(Nb):
+            spres.write(
+                str(int(arr[i][j][0])) + ";" + str(int(arr[i][j][1])) + ";" + str(r) + ";" + str(mat) + "\n")
+    spres.close()
+
+    return norm
+
+
 def Spectrum(materials, leftGran, rightGran, shag):
 
 
@@ -276,7 +303,18 @@ while work == 1:
             out.write("\n" + str(countSim) + ") Proshlo " + str(vrem) + " secund\n")
             countSim = countSim + 1
             out.close()
-            G.show()
+            if len(cmds) > 4:
+                if cmds[4] == "Save":
+                    G.savefig(str(countSim) + "section.png")
+                    plot = open(str(countPLot) + 'plot.txt', 'w')
+                    countPLot = countPLot + 1
+                    for i in range(0, len(x), 1):
+                        plot.write(str(x[i]) + " " + str(y[i]) + "\n")
+                    plot.close()
+                else:
+                    G.show()
+            else:
+                G.show()
             G.close()
             break
 
@@ -315,6 +353,10 @@ while work == 1:
 
         if cmds[0] == "ThightsRectNet":
             norm = thights(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]))
+            break
+
+        if cmds[0] == "ThightsTriNet":
+            norm = triangle_thights(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]),int(cmds[6]))
             break
 
         if cmds[0] == "Clear":
