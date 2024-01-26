@@ -26,7 +26,7 @@ def get_plot_from_file():
     global delta
     global name
 
-    file = open(f"{name}", "r")
+    file = open(f"res/{name}", "r")
     str_points = file.readlines()
     points = []
     for str_point in str_points:
@@ -79,6 +79,6 @@ Y = precoords[1]/s
 Z = precoords[2]/s
 
 print(f"{X} {Y} {Z}")
-xy_r = colour.XYZ_to_xy((X, Y, Z))
+xy_r = (X, Y)
 print(xy_r)
 

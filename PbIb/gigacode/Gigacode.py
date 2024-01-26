@@ -15,6 +15,7 @@ import smuthi.postprocessing.far_field
 import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
 from tkinter import *
+from tkinter import ttk
 
 
 
@@ -24,6 +25,7 @@ countOwl = 1
 countPLot = 1
 work = 1
 materials = []
+mathcolors = []
 veryNachalo = time.time()
 
 norm = 0
@@ -107,7 +109,7 @@ def thights(size_x, size_y, r, mat):
     return norm
 
 
-def const_r_rect_net(size_x, size_y, a, b, r):
+def const_r_rect_net(size_x, size_y, a, b, r, mat):
     Na = size_x // a
     Nb = size_y // b
     norm = size_x*size_y
@@ -134,8 +136,38 @@ def const_r_rect_net(size_x, size_y, a, b, r):
     spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
     for i in range(Na):
         for j in range(Nb):
-            spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + "0\n")
+            spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + str(mat) + "\n")
     spres.close()
+    return norm
+
+
+def full_random(n, a, b, r, dr, mat):
+    norm = a*b
+    allspheres = []
+
+    spres = open('SpheresList' + str(countOwl) + '.txt', 'r')
+    line = spres.readline()
+    while (line != ""):
+        allspheres.append([int(line.split(";")[0]),int(line.split(";")[1]),int(line.split(";")[2])])
+        line = spres.readline()
+    spres.close()
+    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+
+    while n > 0:
+        i = True
+        radius = random.randint(r-dr, r+dr)
+        x, y = random.randint(0 + radius, b - radius), random.randint(0 + radius, a - radius)
+        for sphere in allspheres:
+            if (sphere[0] - x)**2 + (sphere[1] - y)**2 < (radius + sphere[2])**2:
+                i = False
+                break
+        if i:
+
+            spres.write(str(x) + ";" + str(y) + ";" + str(radius) + ";" +str(mat) + "\n")
+            allspheres.append([x, y, radius])
+            n -= 1
+    spres.close()
+
     return norm
 
 
@@ -219,7 +251,7 @@ s2.close()
 
 
 while work == 1:
-    cmd = f.readline();  # прочитал строку
+    cmd = f.readline()  # прочитал строку
     cmd = cmd.replace("\n", "")
     cmds = cmd.split(";")
     i = 1
@@ -229,88 +261,73 @@ while work == 1:
             work = 0
             break
 
-        if cmds[0] == "SimulateSpectrum":                                         #симуляция. Вызывается так: от длины волны до длины волны с шагом
+        if cmds[0] == "SimulateSpectrum":
             begin = time.time()
             y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
 
             x = []
-            for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):  # массив иксов, чтоб график построить
+            for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):                       # массив иксов, чтоб график построить
                 x.append(i)
 
-            G.plot(x, y)  # строю графек
+            G.plot(x, y)                                                                    # строю графек
 
             out = open('output.txt', 'a')
             vrem = time.time() - begin
             out.write("\n" + str(countSim) + ") Proshlo " + str(vrem) + " secund\n")
             countSim = countSim + 1
             out.close()
-
-            if len(cmds) > 4:
-                if cmds[4] == "Save":
-                    G.savefig(str(countSim) + "section.png")
-                    plot = open(str(countPLot) + 'plot.txt', 'w')
-                    countPLot = countPLot + 1
-                    for i in range(0, len(x), 1):
-                        plot.write(str(x[i]) + " " + str(y[i]) + "\n")
-                    plot.close()
-                else:
-                    G.show()
-            else:
-                G.show()
+            G.show()
             G.close()
             break
 
-        if cmds[0] == "OneSphere":                                                #добавление сферы
-            sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')  # записал сферки
-            sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4]+"\n")     #сфера добавляется так: x;y;r;номер материала
+        if cmds[0] == "OneSphere":                                                          #добавление сферы
+            sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')                        # записал сферки
+            sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4]+"\n")        #сфера добавляется так: x;y;r;номер материала
             sprs.close()
             break
 
-        if cmds[0] == "AddMaterial":                                              #придётся запоминать номера...
+        if cmds[0] == "AddMaterial":
             materials.append(Material(cmds[1]))
+            mathcolors.append([random.randint(0, 256), random.randint(0, 256), random.randint(0, 256)])
             break
 
         if cmds[0] == "Draw":
             window = Tk()
-            c = Canvas(window, width=1920, height=1080)  # Холст 1000
+            c = Canvas(window, width=1920, height=1080)
             c.pack()
             sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
             line = sps.readline()
             while line != "":
-                c.create_oval(int(line.split(";")[0])/20-int(line.split(";")[2])/20, int(line.split(";")[1])/20-int(line.split(";")[2])/20, int(line.split(";")[0])/20+int(line.split(";")[2])/20, int(line.split(";")[1])/20+int(line.split(";")[2])/20, fill="red")
+                m = int(line.split(";")[3])
+                c.create_oval(int(line.split(";")[0])/20-int(line.split(";")[2])/20, int(line.split(";")[1])/20-int(line.split(";")[2])/20, int(line.split(";")[0])/20+int(line.split(";")[2])/20, int(line.split(";")[1])/20+int(line.split(";")[2])/20, fill='#{:02x}{:02x}{:02x}'.format( int(mathcolors[m][0]), int(mathcolors[m][1]), int(mathcolors[m][2]) ))
                 line = sps.readline()
             sps.close()
-            if len(cmds) > 1:
-                if cmds[1] == "save":
-                    window.update()                                                                 # pip install aspose-pdf
-                    c.postscript(file=str(countDraw) + "udoli.ps", colormode='color')               #костыль - https://products.aspose.com/pdf/ru/python-net/conversion/ps-to-png/
-                    countDraw = countDraw + 1
-                else:
-                    window.mainloop()
-            else:
-                window.mainloop()
+            window.mainloop()
             break
 
-        if cmds[0] == "RectNet":                                              #придётся запоминать номера...
-            norm = const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]))
+        if cmds[0] == "RectNet":
+            norm = const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]), int(cmds[6]))
             break
 
-        if cmds[0] == "ThightsRectNet":                                              #придётся запоминать номера...
+        if cmds[0] == "Random":
+            norm = full_random(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]), int(cmds[6]))
+            break
+
+        if cmds[0] == "ThightsRectNet":
             norm = thights(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]))
             break
 
-        if cmds[0] == "Clear":  # придётся запоминать номера...
+        if cmds[0] == "Clear":
             ssss = open('SpheresList' + str(countOwl) + '.txt', 'w')
             ssss.truncate()
             ssss.close()
             break
 
-        if cmds[0] == "Podstilka":                                              #придётся запоминать номера...
+        if cmds[0] == "Podstilka":
             podstilka = cmds[1]
             break
 
-
-        if cmds[0] == "Owl":  # придётся запоминать номера...
+        if cmds[0] == "Owl":
             countOwl = countOwl + 1
             break
 

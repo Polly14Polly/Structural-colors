@@ -1,8 +1,11 @@
-Clear
+
+
+
 AddMaterial;Si_Vuye_20C
-AddMaterial;SiO2_Gao
-Podstilka;1
-OneSphere;300;300;100;0
+Podstilka;0
+OneSphere;800;800;500;0
+Draw
+
 SimulateSpectrum;380;781;20;Save
 
 ThightsRectNet;425;425;85;0
