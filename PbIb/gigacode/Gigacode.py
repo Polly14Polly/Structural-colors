@@ -5,7 +5,7 @@ import smuthi.initial_field
 import smuthi.layers
 import smuthi.particles
 import smuthi.postprocessing.far_field as ff
-import matplotlib.pyplot as G
+import matplotlib.pyplot as graf
 import numpy as np
 import smuthi.simulation
 import smuthi.initial_field
@@ -15,7 +15,6 @@ import smuthi.postprocessing.far_field
 import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
 from tkinter import *
-from tkinter import ttk
 
 
 
@@ -204,7 +203,6 @@ def Spectrum(materials, leftGran, rightGran, shag):
     bI = []  # массив с рассеянием
     for i in range(leftGran, rightGran, shag):  # фором пробегаюсь по всем длинам волн (i - длина волны в нм)
         N = 0
-        R = 0
         ns = []
         js = []
         sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
@@ -213,7 +211,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
             js.append(search_wl(0, mat.length, mat.wl, mat.j, i / 1000))
 
         two_layers = smuthi.layers.LayerSystem(thicknesses=[0, 0],  # просто стандартные два полупространства
-                                               refractive_indices=[1.52, 1])
+                                               refractive_indices=[ns[podstilka] + js[podstilka], 1])
 
 
 
@@ -222,7 +220,6 @@ def Spectrum(materials, leftGran, rightGran, shag):
         line = sps.readline()
         while(line != ""):
             N = N+1
-            R = int(line.split(";")[2])
             spheres.append(
                 smuthi.particles.Sphere(position=[int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])],
                                         refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])],
@@ -296,7 +293,7 @@ while work == 1:
             for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):                       # массив иксов, чтоб график построить
                 x.append(i)
 
-            G.plot(x, y)                                                                    # строю графек
+            graf.plot(x, y)                                                                    # строю графек
 
             out = open('output.txt', 'a')
             vrem = time.time() - begin
@@ -305,17 +302,17 @@ while work == 1:
             out.close()
             if len(cmds) > 4:
                 if cmds[4] == "Save":
-                    G.savefig(str(countSim) + "section.png")
+                    graf.savefig(str(countSim) + "section.png")
                     plot = open(str(countPLot) + 'plot.txt', 'w')
                     countPLot = countPLot + 1
                     for i in range(0, len(x), 1):
                         plot.write(str(x[i]) + " " + str(y[i]) + "\n")
                     plot.close()
                 else:
-                    G.show()
+                    graf.show()
             else:
-                G.show()
-            G.close()
+                graf.show()
+            graf.close()
             break
 
         if cmds[0] == "OneSphere":                                                          #добавление сферы
