@@ -211,7 +211,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
             js.append(search_wl(0, mat.length, mat.wl, mat.j, i / 1000))
 
         two_layers = smuthi.layers.LayerSystem(thicknesses=[0, 0],  # просто стандартные два полупространства
-                                               refractive_indices=[ns[podstilka] + js[podstilka], 1])
+                                               refractive_indices=[ns[int(podstilka)] + js[int(podstilka)]*1j, 1])
 
 
 
@@ -222,7 +222,7 @@ def Spectrum(materials, leftGran, rightGran, shag):
             N = N+1
             spheres.append(
                 smuthi.particles.Sphere(position=[int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])],
-                                        refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])],
+                                        refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])]*1j,
                                         radius=int(line.split(";")[2]),
                                         l_max=3)
             )
