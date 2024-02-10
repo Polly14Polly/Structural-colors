@@ -20,15 +20,11 @@ screen_width = 1000
 screen_height = 500
 k = screen_width / r_screen_width
 
-max_radius = mid_radius + mid_radius*0.05*(1-2*random.random())
-
 os.mkdir(name)
 
 
 def structure():
     spheres = []
-
-    spheres_for_smuthi = []
 
     def full_random(num_of_spheres):
         spheres.append([0., 0., 0.])
@@ -37,7 +33,7 @@ def structure():
 
         while n > 0:
             i = True
-            radius = random.random()*max_radius*0.1 + max_radius*0.95
+            radius = mid_radius + mid_radius*0.05*(1-2*random.random())
             x_coord, y_coord = (radius + random.random()*(r_screen_width - 2*radius),
                                 radius + random.random()*(r_screen_height - 2*radius))
             for sphere in spheres:
@@ -104,11 +100,13 @@ def structure():
 
         spectrum = []
 
-        for wave in range(380, 780, 20):
+        for wave in range(380, 780, 100):
+            spheres_for_smuthi = []
+
             sphere_ref_ind = get_ref_index(wave, "Si")
             layer_ref_ind = get_ref_index(wave, "SiO2")
             for sphere in spheres:
-                print(sphere[2]*100)
+                print([sphere[0]*100, sphere[1]*100, sphere[2]*100])
                 spheres_for_smuthi.append(
                     smuthi.particles.Sphere(
                         position=[sphere[0]*100, sphere[1]*100, sphere[2]*100],
@@ -143,7 +141,7 @@ def structure():
                 layer_system=layers
             )
 
-            norm = screen_width*screen_height*10000
+            norm = r_screen_width*r_screen_height*10000
 
             scs = scs / norm
 
@@ -153,15 +151,14 @@ def structure():
 
     def sum_with_scale(array, delta):
         sum_ = 0
-        for i in range(len(array) - 1):
+        for i in range(0, len(array) - 1, delta):
             sum_ += (array[i] + array[i + 1]) / 2
-            i += delta / 5 - 1
 
         return sum_
 
     def mult_integral(delta, *args):
         mult_fun = []
-        for i in range(len(args[0]) - 1):
+        for i in range(0, len(args[0]) - 1, delta):
             el = 1
             for fun in args:
                 if args.index(fun) == 1:
@@ -170,12 +167,11 @@ def structure():
                     el *= (fun[i] + fun[i + 1]) / 2
 
             mult_fun.append(el)
-            i += delta / 5 - 1
             print(i)
 
         return sum_with_scale(mult_fun, delta)
 
-    def cie_from_spectrum(spectrum):
+    def cie_from_spectrum(x_graph, y_graph):
         # Считываем функции всоприятия цветов реепторами глаза
         x_ = pandas.read_excel("x2_10deg_05.xlsx")
         y_ = pandas.read_excel("y2_10deg_05.xlsx")
@@ -186,12 +182,12 @@ def structure():
         y_ = y_.iloc[1:82, 1]
         z_ = z_.iloc[1:82, 1]
 
-        delta = abs(spectrum[0] - spectrum[1])
+        delta = abs(x_graph[0] - x_graph[1])
 
         # Вычисление координат цвета
-        pre_coordinates = (mult_integral(delta, x_.tolist(), spectrum),
-                           mult_integral(delta, y_.tolist(), spectrum),
-                           mult_integral(delta, z_.tolist(), spectrum))
+        pre_coordinates = (mult_integral(delta, x_.tolist(), y_graph),
+                           mult_integral(delta, y_.tolist(), y_graph),
+                           mult_integral(delta, z_.tolist(), y_graph))
 
         s = sum(pre_coordinates)
 
@@ -205,7 +201,7 @@ def structure():
 
         screen = pg.display.set_mode((800, 816))
 
-        bg = pg.image.load("cie_img.jpg")
+        bg = pg.image.load("cie_img.png")
 
         screen.blit(bg, (0, 0))
 
@@ -242,9 +238,9 @@ def structure():
     matplotlib.pyplot.plot(x, y)
     matplotlib.pyplot.xlabel("Wavelength [nm]")
     matplotlib.pyplot.ylabel("Normalized cross-sections")
-    matplotlib.pyplot.plot.savefih(f"{name}/spectrum.png")
+    matplotlib.pyplot.savefig(f"{name}/spectrum.png")
 
-    cie_graph(cie_from_spectrum(spec))
+    cie_graph(cie_from_spectrum(x, y))
 
 
 structure()
