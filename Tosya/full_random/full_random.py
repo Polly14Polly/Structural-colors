@@ -41,7 +41,7 @@ def structure():
             x_coord, y_coord = (radius + random.random()*(r_screen_width - 2*radius),
                                 radius + random.random()*(r_screen_height - 2*radius))
             for sphere in spheres:
-                if (sphere[0] - x_coord)**2 + (sphere[1] - y_coord)**2 < (radius + sphere[2]+1)**2:
+                if (sphere[0] - x_coord)**2 + (sphere[1] - y_coord)**2 < (radius + sphere[2]+0.2)**2:
                     i = False
                     break
             if i:
