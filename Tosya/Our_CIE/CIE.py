@@ -7,7 +7,7 @@ pygame.init()
 
 screen = pygame.display.set_mode((800, 816))
 
-bg = pygame.image.load("cie_img.jpg")
+bg = pygame.image.load("cie_img.png")
 
 coords = [
     [0.32, 0.5],
