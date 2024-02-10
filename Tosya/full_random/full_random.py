@@ -13,9 +13,9 @@ import smuthi.postprocessing.far_field as ff
 
 name = input("Озаглавьте папку >>> ")
 
-r_screen_width = int(input("Ширина x поля в нанометрах/100 >>> "))
-r_screen_height = int(input("Ширина y поля в нанометрах/100 >>> "))
-mid_radius = int(input("Радиус в нанометрах/100 >>> "))
+r_screen_width = float(input("Ширина x поля в нанометрах/100 >>> "))
+r_screen_height = float(input("Ширина y поля в нанометрах/100 >>> "))
+mid_radius = float(input("Радиус в нанометрах/100 >>> "))
 screen_width = 1000
 screen_height = 500
 k = screen_width / r_screen_width
