@@ -100,7 +100,7 @@ def structure():
 
         spectrum = []
 
-        for wave in range(380, 780, 100):
+        for wave in range(380, 780, 20):
             spheres_for_smuthi = []
 
             sphere_ref_ind = get_ref_index(wave, "Si")
@@ -148,6 +148,66 @@ def structure():
             spectrum.append([scs, wave])
 
         return spectrum
+
+    def smuthi_calculation_angle(wave):
+        global r_screen_width
+        global r_screen_height
+
+        angle_spectrum = []
+
+        angle = 0
+
+        spheres_for_smuthi = []
+
+        sphere_ref_ind = get_ref_index(wave, "Si")
+        layer_ref_ind = get_ref_index(wave, "SiO2")
+
+        for sphere in spheres:
+            print([sphere[0] * 100, sphere[1] * 100, sphere[2] * 100])
+            spheres_for_smuthi.append(
+                smuthi.particles.Sphere(
+                    position=[sphere[0] * 100, sphere[1] * 100, sphere[2] * 100],
+                    refractive_index=sphere_ref_ind,
+                    radius=sphere[2] * 100,
+                    l_max=3
+                )
+            )
+
+        layers = smuthi.layers.LayerSystem(thicknesses=[0, 0], refractive_indices=[layer_ref_ind, 1])
+
+        while angle < np.pi/2:
+            plane_wave = smuthi.initial_field.PlaneWave(
+                vacuum_wavelength=wave,
+                polar_angle=angle,
+                azimuthal_angle=0,
+                polarization=0
+            )
+
+            simulation = smuthi.simulation.Simulation(
+                layer_system=layers,
+                particle_list=spheres_for_smuthi,
+                solver_type='gmres',
+                solver_tolerance=1e-7,
+                initial_field=plane_wave
+            )
+
+            simulation.run()
+
+            scs = ff.total_scattering_cross_section(
+                initial_field=plane_wave,
+                particle_list=spheres_for_smuthi,
+                layer_system=layers
+            )
+
+            norm = r_screen_width*r_screen_height*10000
+
+            scs = scs / norm
+
+            angle_spectrum.append([scs, angle])
+
+            angle += np.pi/40
+
+        return angle_spectrum
 
     def sum_with_scale(array, delta):
         sum_ = 0
@@ -240,7 +300,25 @@ def structure():
     matplotlib.pyplot.ylabel("Normalized cross-sections")
     matplotlib.pyplot.savefig(f"{name}/spectrum.png")
 
+    matplotlib.pyplot.close()
+
     cie_graph(cie_from_spectrum(x, y))
+
+    max_wave = x[y.index(max(y))]
+
+    x_ang = []
+    y_ang = []
+
+    spec_ang = smuthi_calculation_angle(max_wave)
+
+    for point in spec_ang:
+        x_ang.append(point[1])
+        y_ang.append(point[0])
+
+    matplotlib.pyplot.plot(x_ang, y_ang)
+    matplotlib.pyplot.xlabel("Angle [Rad]")
+    matplotlib.pyplot.ylabel("Normalized cross-sections")
+    matplotlib.pyplot.savefig(f"{name}/angle_spectrum.png")
 
 
 structure()
