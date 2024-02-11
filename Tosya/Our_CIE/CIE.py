@@ -13,7 +13,7 @@ def cie_from_spec(file):
     delta = 0
     name = file
 
-    file = open(f"{name}", "r")
+    file = open(f"{name}.txt", "r")
     str_points = file.readlines()
     for str_point in str_points:
         arr_str_point = str_point.split()
@@ -27,7 +27,7 @@ def cie_from_spec(file):
         global delta
         global name
 
-        file = open(f"res/{name}", "r")
+        file = open(f"{name}.txt", "r")
         str_points = file.readlines()
         points = []
         for str_point in str_points:
