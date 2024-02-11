@@ -315,9 +315,17 @@ def structure(instruction):
 
     spec = smuthi_calculation_wave()
 
+    spectrum_string = ""
+
     for point in spec:
         x.append(point[1])
         y.append(point[0])
+        spectrum_string = f"{spectrum_string}{point[1]} {point[0]}\n"
+
+    spectrum_file = open(f"{name}/spectrum.txt", "w")
+
+    spectrum_file.write(spectrum_string)
+    spectrum_file.close()
 
     matplotlib.pyplot.plot(x, y)
     matplotlib.pyplot.xlabel("Wavelength [nm]")

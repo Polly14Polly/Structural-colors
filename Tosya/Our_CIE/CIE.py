@@ -5,15 +5,14 @@ import pandas
 import colour
 import os
 
-def cie_from_spec(file):
+def cie_from_spec(file_name):
     S = []
 
     j = []
 
     delta = 0
-    name = file
 
-    file = open(f"{name}.txt", "r")
+    file = open(f"{file_name}.txt", "r")
     str_points = file.readlines()
     for str_point in str_points:
         arr_str_point = str_point.split()
@@ -23,11 +22,7 @@ def cie_from_spec(file):
 
     # Получение результатов SMUTHI
     def get_plot_from_file():
-        global S
-        global delta
-        global name
-
-        file = open(f"{name}.txt", "r")
+        file = open(f"{file_name}.txt", "r")
         str_points = file.readlines()
         points = []
         for str_point in str_points:
