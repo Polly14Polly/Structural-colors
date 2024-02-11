@@ -207,6 +207,66 @@ def structure(instruction):
 
         return angle_spectrum
 
+    def smuthi_calculation_with_some_angles():
+        spectrum_with_some_angles = []
+
+        for angle in [np.pi, np.pi*5/6, np.pi*2/3]:
+            waves = []
+            scss = []
+            for wave in range(380, 800, 20):
+                spheres_for_smuthi = []
+
+                sphere_ref_ind = get_ref_index(wave, "Si")
+                layer_ref_ind = get_ref_index(wave, "SiO2")
+                spheres_for_smuthi.append(
+                    smuthi.particles.Sphere(
+                        position=[r_screen_width/2*100, r_screen_height/2*100, mid_radius*100],
+                        refractive_index=sphere_ref_ind,
+                        radius=mid_radius*100,
+                        l_max=3
+                    )
+                )
+
+                layers = smuthi.layers.LayerSystem(thicknesses=[0, 0], refractive_indices=[layer_ref_ind, 1])
+
+                plane_wave = smuthi.initial_field.PlaneWave(
+                    vacuum_wavelength=wave,
+                    polar_angle=angle,
+                    azimuthal_angle=0,
+                    polarization=0
+                )
+
+                simulation = smuthi.simulation.Simulation(
+                    layer_system=layers,
+                    particle_list=spheres_for_smuthi,
+                    solver_type='gmres',
+                    solver_tolerance=1e-7,
+                    initial_field=plane_wave
+                )
+
+                simulation.run()
+
+                scs = ff.total_scattering_cross_section(
+                    initial_field=plane_wave,
+                    particle_list=spheres_for_smuthi,
+                    layer_system=layers
+                )
+
+                norm = r_screen_width*r_screen_height*10000
+
+                scs = scs / norm
+
+                waves.append(wave)
+                scss.append(scs)
+
+            matplotlib.pyplot.plot(waves, scss)
+
+        matplotlib.pyplot.xlabel("Wavelength [nm]")
+        matplotlib.pyplot.ylabel("Normalized cross-sections")
+        matplotlib.pyplot.savefig(f"{name}/spectrum_with_different_angles.png")
+
+        matplotlib.pyplot.close()
+
     def smuthi_calculation_one_particle():
         one_particle_spectrum = []
 
@@ -326,9 +386,9 @@ def structure(instruction):
             3
         )
 
-        font = pg.font.SysFont("chalkduster.ttf", 24)
-        text = font.render(f'{name}', True, (0, 0, 0))
-        screen.blit(text, (0, 0))
+        font = pg.font.SysFont("chalkduster.ttf", 48)
+        text = font.render(f'{n}', True, (0, 0, 0))
+        screen.blit(text, (400, 40))
 
         pg.image.save(screen, f"{name}/cie{n}.png")
         pg.quit()
@@ -336,7 +396,7 @@ def structure(instruction):
     full_random(number_of_spheres)
     view()
 
-    x = []
+    """x = []
     y = []
 
     spec = smuthi_calculation_wave()
@@ -352,7 +412,7 @@ def structure(instruction):
 
     matplotlib.pyplot.close()
 
-    cie_graph(cie_from_spectrum(x, y), 1)
+    cie_graph(cie_from_spectrum(x, y), name)
 
     max_wave = x[y.index(max(y))]
 
@@ -388,8 +448,9 @@ def structure(instruction):
 
     matplotlib.pyplot.close()
 
-    cie_graph(cie_from_spectrum(one_particle_x, one_particle_y), 2)
+    cie_graph(cie_from_spectrum(one_particle_x, one_particle_y), f"{mid_radius*100}nm_1_particle")"""
 
+    smuthi_calculation_with_some_angles()
 
 for inst in instructions_lines:
     structure(inst)

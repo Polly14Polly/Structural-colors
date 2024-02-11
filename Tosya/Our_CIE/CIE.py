@@ -14,7 +14,7 @@ files = []
 
 instruction = input("Введите название файла со спектром или start (для расчёта) >>> ")
 
-while instruction != "exit":
+while instruction != "start":
     files.append(instruction)
     instruction = input("Введите название файла со спектром или start (для расчёта) >>> ")
 
