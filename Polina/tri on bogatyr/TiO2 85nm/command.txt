@@ -4,10 +4,10 @@ AddMaterial;Si_Vuye_20C
 AddMaterial;CdS_Treharne
 AddMaterial;TiO2_Sarkar
 Podstilka;0
-ThightsRectNet;1800;1800;180;3
+ThightsRectNet;800;800;80;3
 SimulateSpectrum;380;781;20;Save
 Owl
 Clear
 Podstilka;0
-ThightsTriNet;1800;1800;360;360;180;3
+ThightsTriNet;800;800;160;160;80;3
 SimulateSpectrum;380;781;20;Save

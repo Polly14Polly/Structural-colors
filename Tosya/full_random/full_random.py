@@ -26,8 +26,8 @@ def structure(instruction):
     r_screen_height = float(instruction_array[2])
     mid_radius = float(instruction_array[3])
     number_of_spheres = int(instruction_array[4])
-    screen_width = 1000
-    screen_height = 500
+    screen_width = 1980
+    screen_height = r_screen_height / r_screen_width * screen_width
     k = screen_width / r_screen_width
 
     os.mkdir(name)
@@ -41,11 +41,11 @@ def structure(instruction):
 
         while n > 0:
             i = True
-            radius = mid_radius + mid_radius*0.05*(1-2*random.random())
-            x_coord, y_coord = (radius + random.random()*(r_screen_width - 2*radius),
-                                radius + random.random()*(r_screen_height - 2*radius))
+            radius = mid_radius + mid_radius * 0.05 * (1 - 2 * random.random())
+            x_coord, y_coord = (radius + random.random() * (r_screen_width - 2 * radius),
+                                radius + random.random() * (r_screen_height - 2 * radius))
             for sphere in spheres:
-                if (sphere[0] - x_coord)**2 + (sphere[1] - y_coord)**2 < (radius + sphere[2]+0.2)**2:
+                if (sphere[0] - x_coord) ** 2 + (sphere[1] - y_coord) ** 2 < (radius + sphere[2] + 0.2) ** 2:
                     i = False
                     break
             if i:
@@ -62,7 +62,7 @@ def structure(instruction):
         screen.fill((0, 0, 0))
 
         for sphere in spheres:
-            center_x, center_y, radius = sphere[0]*k, sphere[1]*k, sphere[2]*k
+            center_x, center_y, radius = sphere[0] * k, sphere[1] * k, sphere[2] * k
             pg.draw.circle(screen, (255, 255, 255), (center_x, center_y), radius)
 
         pg.image.save(screen, f'{name}/structure.png')
@@ -71,7 +71,8 @@ def structure(instruction):
     def get_ref_index(wave, material):
         dependencies = {
             "SiO2": "SiO2_Gao.txt",
-            "Si": "Si_Vuye_20C.txt"
+            "Si": "Si_Vuye_20C.txt",
+            "TiO2": "TiO2_Sarkar.txt"
         }
         file = open(dependencies[material], "r")
         lines = file.readlines()
@@ -82,21 +83,21 @@ def structure(instruction):
             n_array.append(line.split(" "))
 
         wave_ind = 0
-        while float(n_array[wave_ind][0])*1000 < wave:
+        while float(n_array[wave_ind][0]) * 1000 < wave:
             wave_ind += 1
         wave_btw = [wave_ind - 1, wave_ind]
-        delta_wave_1 = wave - float(n_array[wave_btw[0]][0])*1000
-        delta_wave_2 = float(n_array[wave_btw[1]][0])*1000 - wave
+        delta_wave_1 = wave - float(n_array[wave_btw[0]][0]) * 1000
+        delta_wave_2 = float(n_array[wave_btw[1]][0]) * 1000 - wave
         if delta_wave_2 == 0:
-            return float(n_array[wave_btw[1]][1]) + float(n_array[wave_btw[1]][2])*1j
+            return float(n_array[wave_btw[1]][1]) + float(n_array[wave_btw[1]][2]) * 1j
         if delta_wave_1 == 0:
-            return float(n_array[wave_btw[0]][1]) + float(n_array[wave_btw[0]][2])*1j
+            return float(n_array[wave_btw[0]][1]) + float(n_array[wave_btw[0]][2]) * 1j
         else:
-            scale = delta_wave_1/(delta_wave_2+delta_wave_1)
+            scale = delta_wave_1 / (delta_wave_2 + delta_wave_1)
             delta_1 = abs(float(n_array[wave_btw[1]][1]) - float(n_array[wave_btw[0]][1]))
             delta_2 = abs(float(n_array[wave_btw[1]][2]) - float(n_array[wave_btw[0]][2]))
-            return ((abs(float(n_array[wave_btw[0]][1])) + abs(delta_1*scale)) +
-                    (abs(float(n_array[wave_btw[0]][2])) + abs(delta_2*scale))*1j)
+            return ((abs(float(n_array[wave_btw[0]][1])) + abs(delta_1 * scale)) +
+                    (abs(float(n_array[wave_btw[0]][2])) + abs(delta_2 * scale)) * 1j)
 
     def smuthi_calculation_wave():
         spectrum = []
@@ -104,15 +105,15 @@ def structure(instruction):
         for wave in range(380, 800, 20):
             spheres_for_smuthi = []
 
-            sphere_ref_ind = get_ref_index(wave, "Si")
             layer_ref_ind = get_ref_index(wave, "SiO2")
+            sphere_ref_ind = get_ref_index(wave, "Si")
             for sphere in spheres:
-                print([sphere[0]*100, sphere[1]*100, sphere[2]*100])
+                # print([sphere[0]*100, sphere[1]*100, sphere[2]*100])
                 spheres_for_smuthi.append(
                     smuthi.particles.Sphere(
-                        position=[sphere[0]*100, sphere[1]*100, sphere[2]*100],
+                        position=[sphere[0] * 100, sphere[1] * 100, sphere[2] * 100],
                         refractive_index=sphere_ref_ind,
-                        radius=sphere[2]*100,
+                        radius=sphere[2] * 100,
                         l_max=3
                     )
                 )
@@ -134,7 +135,10 @@ def structure(instruction):
                 initial_field=plane_wave
             )
 
+            print("Идёт расчёт для длины волны " + str(wave) + " нм")
+
             simulation.run()
+
 
             scs = ff.total_scattering_cross_section(
                 initial_field=plane_wave,
@@ -142,7 +146,7 @@ def structure(instruction):
                 layer_system=layers
             )
 
-            norm = r_screen_width*r_screen_height*10000
+            norm = r_screen_width * r_screen_height * 10000
 
             scs = scs / norm
 
@@ -173,7 +177,7 @@ def structure(instruction):
 
         layers = smuthi.layers.LayerSystem(thicknesses=[0, 0], refractive_indices=[layer_ref_ind, 1])
 
-        while angle < np.pi/2:
+        while angle < np.pi / 2:
             plane_wave = smuthi.initial_field.PlaneWave(
                 vacuum_wavelength=wave,
                 polar_angle=angle,
@@ -197,13 +201,13 @@ def structure(instruction):
                 layer_system=layers
             )
 
-            norm = r_screen_width*r_screen_height*10000
+            norm = r_screen_width * r_screen_height * 10000
 
             scs = scs / norm
 
             angle_spectrum.append([scs, angle])
 
-            angle += np.pi/40
+            angle += np.pi / 40
 
         return angle_spectrum
 
@@ -217,9 +221,9 @@ def structure(instruction):
             layer_ref_ind = get_ref_index(wave, "SiO2")
             spheres_for_smuthi.append(
                 smuthi.particles.Sphere(
-                    position=[r_screen_width/2*100, r_screen_height/2*100, mid_radius*100],
+                    position=[r_screen_width / 2 * 100, r_screen_height / 2 * 100, mid_radius * 100],
                     refractive_index=sphere_ref_ind,
-                    radius=mid_radius*100,
+                    radius=mid_radius * 100,
                     l_max=3
                 )
             )
@@ -249,7 +253,7 @@ def structure(instruction):
                 layer_system=layers
             )
 
-            norm = r_screen_width*r_screen_height*10000
+            norm = r_screen_width * r_screen_height * 10000
 
             scs = scs / norm
 
@@ -259,14 +263,14 @@ def structure(instruction):
 
     def sum_with_scale(array, delta):
         sum_ = 0
-        for i in range(0, len(array) - 1, delta//5):
+        for i in range(0, len(array) - 1, delta // 5):
             sum_ += (array[i] + array[i + 1]) / 2
 
-        return sum_*delta
+        return sum_ * delta
 
     def mult_integral(delta, *args):
         mult_fun = []
-        for i in range(0, len(args[0]) - 1, delta//5):
+        for i in range(0, len(args[0]) - 1, delta // 5):
             el = 1
             for fun in args:
                 if args.index(fun) == 1:
@@ -354,41 +358,41 @@ def structure(instruction):
 
     cie_graph(cie_from_spectrum(x, y), 1)
 
-    max_wave = x[y.index(max(y))]
+#    max_wave = x[y.index(max(y))]
 
-    x_ang = []
-    y_ang = []
+#    x_ang = []
+#    y_ang = []
 
-    spec_ang = smuthi_calculation_angle(max_wave)
+#    spec_ang = smuthi_calculation_angle(max_wave)
 
-    for point in spec_ang:
-        x_ang.append(point[1])
-        y_ang.append(point[0])
+#    for point in spec_ang:
+#        x_ang.append(point[1])
+#        y_ang.append(point[0])
 
-    matplotlib.pyplot.plot(x_ang, y_ang)
-    matplotlib.pyplot.xlabel("Angle [Rad]")
-    matplotlib.pyplot.ylabel("Normalized cross-sections")
-    matplotlib.pyplot.savefig(f"{name}/angle_spectrum.png")
+#    matplotlib.pyplot.plot(x_ang, y_ang)
+#    matplotlib.pyplot.xlabel("Angle [Rad]")
+#    matplotlib.pyplot.ylabel("Normalized cross-sections")
+#    matplotlib.pyplot.savefig(f"{name}/angle_spectrum.png")
 
-    matplotlib.pyplot.close()
+#    matplotlib.pyplot.close()
 
-    one_particle_x = []
-    one_particle_y = []
+#    one_particle_x = []
+#    one_particle_y = []
 
-    one_particle_spec = smuthi_calculation_one_particle()
+#    one_particle_spec = smuthi_calculation_one_particle()
 
-    for point in one_particle_spec:
-        one_particle_x.append(point[1])
-        one_particle_y.append(point[0])
+#    for point in one_particle_spec:
+#        one_particle_x.append(point[1])
+#        one_particle_y.append(point[0])
 
-    matplotlib.pyplot.plot(one_particle_x, one_particle_y)
-    matplotlib.pyplot.xlabel("Wavelength [nm]")
-    matplotlib.pyplot.ylabel("Normalized cross-sections")
-    matplotlib.pyplot.savefig(f"{name}/one_particle_spectrum.png")
+#    matplotlib.pyplot.plot(one_particle_x, one_particle_y)
+#    matplotlib.pyplot.xlabel("Wavelength [nm]")
+#    matplotlib.pyplot.ylabel("Normalized cross-sections")
+#    matplotlib.pyplot.savefig(f"{name}/one_particle_spectrum.png")
 
-    matplotlib.pyplot.close()
+#    matplotlib.pyplot.close()
 
-    cie_graph(cie_from_spectrum(one_particle_x, one_particle_y), 2)
+#    cie_graph(cie_from_spectrum(one_particle_x, one_particle_y), 2)
 
 
 for inst in instructions_lines:

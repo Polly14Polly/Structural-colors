@@ -1,4 +1,6 @@
 
-0) Proshlo 55.628509759902954 secund
+0) Proshlo 326.4150216579437 secund
 
- Vsego proshlo 55.71963167190552
+1) Proshlo 335.6985414028168 secund
+
+ Vsego proshlo 662.2458882331848
