@@ -114,19 +114,19 @@ for coord in coords:
         screen,
         (0, 0, 0),
         (OFFSET_X + x*GLOBAL_DELTA_X/LOCAL_DELTA_X, 816 - (OFFSET_Y + y*GLOBAL_DELTA_Y/LOCAL_DELTA_Y)),
-        3
+        1
     )
 
-    font = pygame.font.SysFont(None, 24)
-    img = font.render(f'{coord[2]}', True, (0, 0, 0))
-    screen.blit(img, (OFFSET_X + x*GLOBAL_DELTA_X/LOCAL_DELTA_X + 8, 816 - (OFFSET_Y + y*GLOBAL_DELTA_Y/LOCAL_DELTA_Y + 8)))
+    #font = pygame.font.SysFont(None, 24)
+    #img = font.render(f'{coord[2]}', True, (0, 0, 0))
+    #screen.blit(img, (OFFSET_X + x*GLOBAL_DELTA_X/LOCAL_DELTA_X + 8, 816 - (OFFSET_Y + y*GLOBAL_DELTA_Y/LOCAL_DELTA_Y + 8)))
 
-dk = 0
-for t in title:
-    font = pygame.font.SysFont(None, 24)
-    img = font.render(f'{t}', True, (255, 255, 255))
-    screen.blit(img, (500 ,60 + dk))
-    dk += 30
+#dk = 0
+#for t in title:
+#    font = pygame.font.SysFont(None, 24)
+#    img = font.render(f'{t}', True, (0, 0, 0))
+#    screen.blit(img, (500 ,60 + dk))
+#    dk += 30
 
-pygame.image.save(screen, f"results/{name}.png")
+pygame.image.save(screen, f"{name}.png")
 pygame.quit()
