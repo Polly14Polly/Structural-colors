@@ -4,7 +4,7 @@ from tkinter import *
 window = Tk()
 c = Canvas(window, width=1920, height=1080)
 c.pack()
-sps = open('SpheresList1' + '.txt', 'r')
+sps = open('SpheresList3' + '.txt', 'r')
 line = sps.readline()
 while line != "":
     m = int(line.split(";")[3])
