@@ -1,3 +1,4 @@
+import math
 import random
 import time
 import smuthi.simulation
@@ -14,27 +15,26 @@ import smuthi.particles
 import smuthi.postprocessing.far_field
 import smuthi.postprocessing.graphical_output
 import smuthi.utility.automatic_parameter_selection
-from tkinter import *
+import pygame
 
+count = 1
 
-
-countSim = 0
-countDraw = 1
-countOwl = 1
-countPLot = 1
-work = 1
 materials = []
 mathcolors = []
 veryNachalo = time.time()
 
-norm = 0
+podstilkaX = 0
+podstilkaY = 0
 
+angle = np.pi
+LampSpectrumWL = [1.0, 1000.0]  # Массивы для спектра лампы. Изначально их задал, чтобы было значение по умолчанию.
+LampSpectrum = [0.0001, 0.00001]  # (как раз изначально амплитуда поля была равна 1)
 
 
 class Material:
     def __init__(self, name):
         self.name = name
-        read = open('materials/' + name +'.txt', 'r')  # зачитал файл
+        read = open('materials/' + name + '.txt', 'r')  # зачитал файл
 
         data_n_wl = []  # создал два массива
         data_n = []
@@ -55,18 +55,27 @@ class Material:
         self.length = len(data_n)
 
 
-
-
-
-
-
-
+def lamp(lamp_name):
+    read = open(lamp_name + '.txt', 'r')  # зачитал файл
+    global LampSpectrumWL
+    global LampSpectrum
+    LampSpectrumWL.clear()
+    LampSpectrum.clear()
+    reading = read.readline()
+    while reading != " " and reading != "":
+        reading = reading.strip()
+        reading.replace('.', ',')
+        LampSpectrumWL.append(float(reading.split(" ")[0]))
+        LampSpectrum.append(float(reading.split(" ")[1]))
+        reading = read.readline()
+    read.close()
+    return False
 
 
 def search_wl(left, right, A, B, key):  # бинарный поиск с усреднением относительно соседних
     if right > left + 1:
         middle = int((left + right) / 2)
-        if (A[middle] == key):
+        if A[middle] == key:
             return B[middle]
         if A[middle] > key:
             return search_wl(left, middle, A, B, key)
@@ -77,9 +86,12 @@ def search_wl(left, right, A, B, key):  # бинарный поиск с уср�
 
 
 def thights(size_x, size_y, r, mat):
-    Na = size_x // (2*r)
-    Nb = size_y // (2*r)
-    norm = size_x*size_y
+    Na = size_x // (2 * r)
+    Nb = size_y // (2 * r)
+    global podstilkaX
+    global podstilkaY
+    podstilkaX = size_x
+    podstilkaY = size_y
 
     arr = []  # относительные координаты сфер
     for i in range(Na):
@@ -100,18 +112,22 @@ def thights(size_x, size_y, r, mat):
         for j in range(Nb):
             arr1[i][j][0] = arr[i][j][0] + 2 * r * i
             arr1[i][j][1] = arr[i][j][1] + 2 * r * j
-    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    spres = open('SpheresList' + str(count) + '.txt', 'a')
     for i in range(Na):
         for j in range(Nb):
-            spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + str(mat)+ "\n")
+            spres.write(
+                str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + str(mat) + "\n")
     spres.close()
-    return norm
 
 
 def const_r_rect_net(size_x, size_y, a, b, r, mat):
     Na = size_x // a
     Nb = size_y // b
-    norm = size_x*size_y
+
+    global podstilkaX
+    global podstilkaY
+    podstilkaX = size_x
+    podstilkaY = size_y
 
     arr = []  # относительные координаты сфер
     for i in range(Na):
@@ -132,48 +148,56 @@ def const_r_rect_net(size_x, size_y, a, b, r, mat):
         for j in range(Nb):
             arr1[i][j][0] = arr[i][j][0] + a * i
             arr1[i][j][1] = arr[i][j][1] + b * j
-    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    spres = open('SpheresList' + str(count) + '.txt', 'a')
     for i in range(Na):
         for j in range(Nb):
-            spres.write(str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + str(mat) + "\n")
+            spres.write(
+                str(arr1[i][j][0]) + ";" + str(arr1[i][j][1]) + ";" + str(arr1[i][j][2]) + ";" + str(mat) + "\n")
     spres.close()
-    return norm
 
 
 def full_random(n, a, b, r, dr, mat):
-    norm = a*b
+    global podstilkaX
+    global podstilkaY
+    podstilkaX = a
+    podstilkaY = b
+
     allspheres = []
 
-    spres = open('SpheresList' + str(countOwl) + '.txt', 'r')
+    spres = open('SpheresList' + str(count) + '.txt', 'r')
     line = spres.readline()
     while (line != ""):
-        allspheres.append([int(line.split(";")[0]),int(line.split(";")[1]),int(line.split(";")[2])])
+        allspheres.append([int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])])
         line = spres.readline()
     spres.close()
-    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    spres = open('SpheresList' + str(count) + '.txt', 'a')
 
     while n > 0:
         i = True
-        radius = random.randint(r-dr, r+dr)
+        radius = random.randint(r - dr, r + dr)
         x, y = random.randint(0 + radius, b - radius), random.randint(0 + radius, a - radius)
         for sphere in allspheres:
-            if (sphere[0] - x)**2 + (sphere[1] - y)**2 < (radius + sphere[2])**2:
+            if (sphere[0] - x) ** 2 + (sphere[1] - y) ** 2 < (radius + sphere[2]) ** 2:
                 i = False
                 break
         if i:
-
-            spres.write(str(x) + ";" + str(y) + ";" + str(radius) + ";" +str(mat) + "\n")
+            spres.write(str(x) + ";" + str(y) + ";" + str(radius) + ";" + str(mat) + "\n")
             allspheres.append([x, y, radius])
             n -= 1
     spres.close()
 
-    return norm
 
-
-def triangle_thights(size_x, size_y, a, b, r, mat):
+def triangle_thights(size_x, size_y, r, mat):
+    a = 2 * r
+    b = 2 * r
     Na = size_x // a
     Nb = size_y // b
-    norm = size_x*size_y
+
+    global podstilkaX
+    global podstilkaY
+    podstilkaX = size_x
+    podstilkaY = size_y
+
     arr = []
     for i in range(Na):
         arr.append([])
@@ -187,53 +211,45 @@ def triangle_thights(size_x, size_y, a, b, r, mat):
             arr[i][j][0] = a * i + ((-1) ** (j)) * r / 2  # сдвиг по иксу в зависимости от четности ряда
             arr[i][j][1] = r * j * np.sqrt(3)  # сдвиг по игреку на корень 3
 
-    spres = open('SpheresList' + str(countOwl) + '.txt', 'a')
+    spres = open('SpheresList' + str(count) + '.txt', 'a')
     for i in range(Na):
         for j in range(Nb):
             spres.write(
                 str(int(arr[i][j][0])) + ";" + str(int(arr[i][j][1])) + ";" + str(r) + ";" + str(mat) + "\n")
     spres.close()
 
-    return norm
-
 
 def Spectrum(materials, leftGran, rightGran, shag):
-
-
     bI = []  # массив с рассеянием
     for i in range(leftGran, rightGran, shag):  # фором пробегаюсь по всем длинам волн (i - длина волны в нм)
         N = 0
+        lampAmplitude = math.sqrt(search_wl(0, len(LampSpectrumWL), LampSpectrumWL, LampSpectrum, i))
         ns = []
         js = []
-        sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
+        sps = open('SpheresList' + str(count) + '.txt', 'r')
         for mat in materials:
             ns.append(search_wl(0, mat.length, mat.wl, mat.n, i / 1000))
             js.append(search_wl(0, mat.length, mat.wl, mat.j, i / 1000))
-
         two_layers = smuthi.layers.LayerSystem(thicknesses=[0, 0],  # просто стандартные два полупространства
-                                               refractive_indices=[ns[int(podstilka)] + js[int(podstilka)]*1j, 1])
-
-
-
+                                               refractive_indices=[ns[int(podstilka)] + js[int(podstilka)] * 1j, 1])
 
         spheres = []  # наделал сферок(чтоб каждая расчитывалась в зависимости от длины волны)
         line = sps.readline()
-        while(line != ""):
-            N = N+1
+        while (line != ""):
+            N = N + 1
             spheres.append(
-                smuthi.particles.Sphere(position=[int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])],
-                                        refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])]*1j,
-                                        radius=int(line.split(";")[2]),
-                                        l_max=3)
+                smuthi.particles.Sphere(
+                    position=[int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])],
+                    refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])] * 1j,
+                    radius=int(line.split(";")[2]),
+                    l_max=3)
             )
             line = sps.readline()
 
-
-
-
         plane_wave = smuthi.initial_field.PlaneWave(vacuum_wavelength=i,  # насветил, i - это длина волны
-                                                    polar_angle=np.pi,
+                                                    polar_angle=angle,
                                                     azimuthal_angle=0,
+                                                    amplitude=lampAmplitude,
                                                     polarization=0)
 
         simulation = smuthi.simulation.Simulation(layer_system=two_layers,
@@ -243,12 +259,14 @@ def Spectrum(materials, leftGran, rightGran, shag):
                                                   initial_field=plane_wave)
 
         simulation.run()
-
-
-        scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
+        scs = smuthi.postprocessing.far_field.scattered_far_field(i,
+                                                                  particle_list=spheres,
+                                                                  layer_system=two_layers,
+                                                                  )
+        '''scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
                                                 particle_list=spheres,
-                                                layer_system=two_layers)
-        scs = scs / norm
+                                                layer_system=two_layers)'''
+        scs = scs / (podstilkaX * podstilkaY)
 
         print(i)  # просто вывод, чтоб следить за процессом
         print(scs)
@@ -257,122 +275,106 @@ def Spectrum(materials, leftGran, rightGran, shag):
     return bI
 
 
-
-
-
-
 f = open('command.txt', 'r')  # зачитал файл
 
-s = open('SpheresList' + str(countOwl) + '.txt', 'w') #почистил массив(текстовый файл) сфер
+s = open('SpheresList' + str(count) + '.txt', 'w')  # почистил массив(текстовый файл) сфер
 s.truncate()
 s.close()
-s2 = open('output.txt', 'w')  #почистил вывод
+s2 = open('output.txt', 'w')  # почистил вывод
 s2.truncate()
 s2.close()
 
+work = True
+while work:
+    cmd = f.readline()  # Читаю строчку, делю по ;
+    cmd = cmd.replace("\n", "")  # в строчке - команда
+    cmds = cmd.split(";")  #
 
+    if cmds[0] == " ":
+        work = False
 
+    elif cmds[0] == "":  # Финал программы: если считали пустую строку, то завершаем
+        work = False
 
+    elif cmds[0] == "SimulateSpectrum":
+        begin = time.time()
+        y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
+        x = []
+        for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):  # массив иксов, чтоб график построить
+            x.append(i)
 
-while work == 1:
-    cmd = f.readline()  # прочитал строку
-    cmd = cmd.replace("\n", "")
-    cmds = cmd.split(";")
-    i = 1
-    while i == 1:
+        graf.plot(x, y)  # строю график
+        graf.savefig(str(count) + "section.svg")
+        plot = open(str(count) + 'plot.txt', 'w')
+        for i in range(0, len(x), 1):
+            plot.write(str(x[i]) + " " + str(y[i]) + "\n")
+        plot.close()
+        graf.close()
 
-        if cmds[0] == "":  # конец программы
-            work = 0
-            break
+        out = open('output.txt', 'a')
+        vrem = time.time() - begin
+        out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
+        out.close()
 
-        if cmds[0] == "SimulateSpectrum":
-            begin = time.time()
-            y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
+    elif cmds[0] == "OneSphere":  # добавление сферы
+        sprs = open('SpheresList' + str(count) + '.txt', 'a')  # записал сферки
+        sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4] + "\n")
+        sprs.close()  # сфера добавляется так: x;y;r;номер_материала
+        if podstilkaX == 0:  # Если не было структуры, создаём искуственную нормировку
+            podstilkaX = 4 * int(cmds[3])  # Просто площадь сферы, разделённая на две переменные
+            podstilkaY = np.pi * int(cmds[3])
 
-            x = []
-            for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):                       # массив иксов, чтоб график построить
-                x.append(i)
+    elif cmds[0] == "AddMaterial":
+        materials.append(Material(cmds[1]))
+        mathcolors.append([random.randint(0, 256), random.randint(0, 256), random.randint(0, 256)])
 
-            graf.plot(x, y)                                                                    # строю графек
+    elif cmds[0] == "AddLamp":
+        lamp(cmds[1])
 
-            out = open('output.txt', 'a')
-            vrem = time.time() - begin
-            out.write("\n" + str(countSim) + ") Proshlo " + str(vrem) + " secund\n")
-            countSim = countSim + 1
-            out.close()
-            if len(cmds) > 4:
-                if cmds[4] == "Save":
-                    graf.savefig(str(countSim) + "section.png")
-                    plot = open(str(countPLot) + 'plot.txt', 'w')
-                    countPLot = countPLot + 1
-                    for i in range(0, len(x), 1):
-                        plot.write(str(x[i]) + " " + str(y[i]) + "\n")
-                    plot.close()
-                else:
-                    graf.show()
-            else:
-                graf.show()
-            graf.close()
-            break
+    elif cmds[0] == "SetAngle":
+        angle = np.pi - float(cmds[1])
 
-        if cmds[0] == "OneSphere":                                                          #добавление сферы
-            sprs = open('SpheresList' + str(countOwl) + '.txt', 'a')                        # записал сферки
-            sprs.write(cmds[1] + ";" + cmds[2] + ";" + cmds[3] + ";" + cmds[4]+"\n")        #сфера добавляется так: x;y;r;номер материала
-            sprs.close()
-            break
-
-        if cmds[0] == "AddMaterial":
-            materials.append(Material(cmds[1]))
-            mathcolors.append([random.randint(0, 256), random.randint(0, 256), random.randint(0, 256)])
-            break
-
-        if cmds[0] == "Draw":
-            window = Tk()
-            c = Canvas(window, width=1920, height=1080)
-            c.pack()
-            sps = open('SpheresList' + str(countOwl) + '.txt', 'r')
+    elif cmds[0] == "Draw":
+        screen = pygame.display.set_mode((podstilkaX, podstilkaY))
+        sps = open('SpheresList' + str(count) + '.txt', 'r')
+        line = sps.readline()
+        while line != "":
+            m = int(line.split(";")[3])
+            pygame.draw.circle(
+                screen,
+                '#{:02x}{:02x}{:02x}'.format(int(mathcolors[m][0]), int(mathcolors[m][1]), int(mathcolors[m][2])),
+                (int(line.split(";")[0]), int(line.split(";")[1])),
+                int(line.split(";")[2])
+            )
             line = sps.readline()
-            while line != "":
-                m = int(line.split(";")[3])
-                c.create_oval(int(line.split(";")[0])/20-int(line.split(";")[2])/20, int(line.split(";")[1])/20-int(line.split(";")[2])/20, int(line.split(";")[0])/20+int(line.split(";")[2])/20, int(line.split(";")[1])/20+int(line.split(";")[2])/20, fill='#{:02x}{:02x}{:02x}'.format( int(mathcolors[m][0]), int(mathcolors[m][1]), int(mathcolors[m][2]) ))
-                line = sps.readline()
-            sps.close()
-            window.mainloop()
-            break
+        sps.close()
+        pygame.image.save(screen, f"{'structure_' + str(count)}.png")
+        pygame.quit()
 
-        if cmds[0] == "RectNet":
-            norm = const_r_rect_net(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]), int(cmds[6]))
-            break
+    elif cmds[0] == "RectNet":
+        const_r_rect_net(int(cmds[1]), int(cmds[2]), int(cmds[3]), int(cmds[4]), int(cmds[5]), int(cmds[6]))
 
-        if cmds[0] == "Random":
-            norm = full_random(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]), int(cmds[6]))
-            break
+    elif cmds[0] == "Random":
+        full_random(int(cmds[1]), int(cmds[2]), int(cmds[3]), int(cmds[4]), int(cmds[5]), int(cmds[6]))
 
-        if cmds[0] == "ThightsRectNet":
-            norm = thights(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]))
-            break
+    elif cmds[0] == "ThightsRectNet":
+        thights(int(cmds[1]), int(cmds[2]), int(cmds[3]), int(cmds[4]))
 
-        if cmds[0] == "ThightsTriNet":
-            norm = triangle_thights(int(cmds[1]),int(cmds[2]),int(cmds[3]),int(cmds[4]),int(cmds[5]),int(cmds[6]))
-            break
+    elif cmds[0] == "ThightsTriNet":
+        triangle_thights(int(cmds[1]), int(cmds[2]), int(cmds[3]), int(cmds[4]))
 
-        if cmds[0] == "Clear":
-            ssss = open('SpheresList' + str(countOwl) + '.txt', 'w')
-            ssss.truncate()
-            ssss.close()
-            break
+    elif cmds[0] == "Podstilka":
+        podstilka = cmds[1]
 
-        if cmds[0] == "Podstilka":
-            podstilka = cmds[1]
-            break
+    elif cmds[0] == "Next":
+        count = count + 1
+        podstilkaX = 0
+        podstilkaY = 0
 
-        if cmds[0] == "Owl":
-            countOwl = countOwl + 1
-            break
-
+    else:
         print("Something is creating script ERRORs")
-        i = 0  # почему нет switch case пришлось костылить...
 
-out = open('output.txt', 'a')                                   #отчёт о времени
-out.write("\n Vsego proshlo " +str(time.time() - veryNachalo))
+out = open('output.txt', 'a')  # отчёт о времени
+out.write("\n Vsego proshlo " + str(time.time() - veryNachalo))
 out.close()
+pygame.quit()
