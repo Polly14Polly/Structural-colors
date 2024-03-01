@@ -259,13 +259,13 @@ def Spectrum(materials, leftGran, rightGran, shag):
                                                   initial_field=plane_wave)
 
         simulation.run()
-        scs = smuthi.postprocessing.far_field.scattered_far_field(i,
+        '''scs = smuthi.postprocessing.far_field.scattered_far_field(i,
                                                                   particle_list=spheres,
                                                                   layer_system=two_layers,
-                                                                  )
-        '''scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
+                                                                  )'''
+        scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
                                                 particle_list=spheres,
-                                                layer_system=two_layers)'''
+                                                layer_system=two_layers)
         scs = scs / (podstilkaX * podstilkaY)
 
         print(i)  # просто вывод, чтоб следить за процессом
