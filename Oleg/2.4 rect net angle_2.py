@@ -94,7 +94,7 @@ def structure():
             return ((abs(float(n_array[wave_btw[0]][1])) + abs(delta_1*scale)) +
                     (abs(float(n_array[wave_btw[0]][2])) + abs(delta_2*scale))*1j)
 
-    def smuthi_calculation_wave():
+    def smuthi_calculation_wave(angle):
         global r_screen_width
         global r_screen_height
 
@@ -120,7 +120,7 @@ def structure():
 
             plane_wave = smuthi.initial_field.PlaneWave(
                 vacuum_wavelength=wave,
-                polar_angle=np.pi,
+                polar_angle=angle,
                 azimuthal_angle=0,
                 polarization=0
             )
@@ -149,17 +149,16 @@ def structure():
 
         return spectrum
 
-    def smuthi_calculation_angle(angle):
+    def smuthi_calculation_angle():
         global r_screen_width
         global r_screen_height
 
         angle_spectrum = []
 
-        angle = angle
-        wave = 600
+        angle = 0
 
         spheres_for_smuthi = []
-
+        wave = 740
         sphere_ref_ind = get_ref_index(wave, "Si")
         layer_ref_ind = get_ref_index(wave, "SiO2")
 
@@ -176,37 +175,37 @@ def structure():
 
         layers = smuthi.layers.LayerSystem(thicknesses=[0, 0], refractive_indices=[layer_ref_ind, 1])
 
+        while angle < np.pi/2:
+            plane_wave = smuthi.initial_field.PlaneWave(
+                vacuum_wavelength=wave,
+                polar_angle=angle,
+                azimuthal_angle=0,
+                polarization=0
+            )
 
-        plane_wave = smuthi.initial_field.PlaneWave(
-            vacuum_wavelength=wave,
-            polar_angle=angle,
-            azimuthal_angle=0,
-            polarization=0
-        )
+            simulation = smuthi.simulation.Simulation(
+                layer_system=layers,
+                particle_list=spheres_for_smuthi,
+                solver_type='gmres',
+                solver_tolerance=1e-7,
+                initial_field=plane_wave
+            )
 
-        simulation = smuthi.simulation.Simulation(
-            layer_system=layers,
-            particle_list=spheres_for_smuthi,
-            solver_type='gmres',
-            solver_tolerance=1e-7,
-            initial_field=plane_wave
-        )
+            simulation.run()
 
-        simulation.run()
+            scs = ff.total_scattering_cross_section(
+                initial_field=plane_wave,
+                particle_list=spheres_for_smuthi,
+                layer_system=layers
+            )
 
-        scs = ff.total_scattering_cross_section(
-            initial_field=plane_wave,
-            particle_list=spheres_for_smuthi,
-            layer_system=layers
-        )
+            norm = r_screen_width*r_screen_height*10000
 
-        norm = r_screen_width*r_screen_height*10000
+            scs = scs / norm
 
-        scs = scs / norm
+            angle_spectrum.append([scs, angle])
 
-        angle_spectrum.append([scs, angle])
-
-
+            angle += np.pi/40
 
         return angle_spectrum
 
@@ -268,19 +267,19 @@ def structure():
 
     x = []
     y = []
+    for f in range (1, 13):
+        spec = smuthi_calculation_wave(f/12*np.pi)
 
-    spec = smuthi_calculation_wave()
+        for point in spec:
+            x.append(point[1])
+            y.append(point[0])
 
-    for point in spec:
-        x.append(point[1])
-        y.append(point[0])
+        matplotlib.pyplot.plot(x, y)
+        matplotlib.pyplot.xlabel("Wavelength [nm]")
+        matplotlib.pyplot.ylabel("Normalized cross-sections")
+        matplotlib.pyplot.savefig(f"{name}/spectrum.png")
 
-    matplotlib.pyplot.plot(x, y)
-    matplotlib.pyplot.xlabel("Wavelength [nm]")
-    matplotlib.pyplot.ylabel("Normalized cross-sections")
-    matplotlib.pyplot.savefig(f"{name}/spectrum.png")
-
-    matplotlib.pyplot.close()
+        matplotlib.pyplot.close()
 
 
 
@@ -289,7 +288,7 @@ def structure():
     x_ang = []
     y_ang = []
 
-    spec_ang = smuthi_calculation_angle(max_wave)
+    spec_ang = smuthi_calculation_angle()
 
     for point in spec_ang:
         x_ang.append(point[1])
