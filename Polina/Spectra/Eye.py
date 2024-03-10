@@ -56,9 +56,9 @@ def arith_mean(f, buffer_size=7):
     arith_mean.buffer.append(f)
 
     # Calculation arithmetic mean
-    mean = 0
-    for e in arith_mean.buffer: mean += e
-    mean /= len(arith_mean.buffer)
+    mean = 1
+    for e in arith_mean.buffer: mean *= e
+    mean = mean**(1/len(arith_mean.buffer))
 
     return mean
 
@@ -103,7 +103,7 @@ Hs = []
 for i in Gs:
     Hs.append(easy_mean(i))
 G.plot(Xs, Ys)
-G.plot(Xs, Bs)
+#G.plot(Xs, Bs)
 G.plot(Xs, Hs)
 
 
