@@ -6,12 +6,14 @@ Podstilka;1
 SetAngle;0.436332
 OneSphere;700;700;300;0
 Draw
-SimulateSpectrum;380;781;40
+ScatteringCrossSection;380;781;10
+FarField;380;781;10
 Next
 AddLamp;lamp
 OneSphere;700;700;300;0
 Draw
-SimulateSpectrum;380;781;40
+ScatteringCrossSection;380;781;10
+FarField;380;781;10
 
 Random;64;6000;6000;259;5;0
 Draw

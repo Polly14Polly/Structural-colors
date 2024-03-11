@@ -46,7 +46,7 @@ def kalman(f, q=0.25, r=0.7):
 
     return kalman_adc
 
-def arith_mean(f, buffer_size=7):
+def geom_mean(f, buffer_size=10):
     # Creating buffer
     if not hasattr(arith_mean, "buffer"):
         arith_mean.buffer = [f] * buffer_size
@@ -59,6 +59,22 @@ def arith_mean(f, buffer_size=7):
     mean = 1
     for e in arith_mean.buffer: mean *= e
     mean = mean**(1/len(arith_mean.buffer))
+
+    return mean
+
+def arith_mean(f, buffer_size=10):
+    # Creating buffer
+    if not hasattr(arith_mean, "buffer"):
+        arith_mean.buffer = [f] * buffer_size
+
+    # Move buffer to actually values ( [0, 1, 2, 3] -> [1, 2, 3, 4] )
+    arith_mean.buffer = arith_mean.buffer[1:]
+    arith_mean.buffer.append(f)
+
+    # Calculation arithmetic mean
+    mean = 0
+    for e in arith_mean.buffer: mean += e
+    mean /= len(arith_mean.buffer)
 
     return mean
 
@@ -78,38 +94,42 @@ while cmd != "" and cmd != " ":
     Xs.append(float(cmds[0]))
     Ys.append(float(cmds[1]))
     cmd = read.readline();  # прочитал строку
+for a in range(0, len(Ys)):
+    Ys[a] = Ys[a]/8000
 As = []
 for i in Ys:
     As.append(median(i))
 Bs = []
 for i in As:
-    Bs.append(kalman(i))
+    Bs.append(easy_mean(i))
 Cs = []
 for i in Bs:
     Cs.append(kalman(i))
-Ds = []
-for i in Cs:
-    Ds.append(kalman(i))
+'''Ds = []
+for i in Bs:
+    Ds.append(geom_mean(i))
 Es = []
-for i in Ds:
+for i in Bs:
     Es.append(kalman(i))
 Fs = []
 for i in Es:
-    Fs.append(arith_mean(i))
+    Fs.append(kalman(i))
 Gs = []
 for i in Fs:
-    Gs.append(easy_mean(i))
-Hs = []
-for i in Gs:
-    Hs.append(easy_mean(i))
+    Gs.append(median(i))'''
+
 G.plot(Xs, Ys)
-#G.plot(Xs, Bs)
-G.plot(Xs, Hs)
+
+G.plot(Xs, Cs)
+
+#G.plot(Xs, Es)
+#G.plot(Xs, As)
+#G.plot(Xs, Cs)
 
 
 spres = open('lamp.txt', 'w')
 for i in range(0, len(Xs)):
-    spres.write(str(Xs[i]) + " " + str(Hs[i]/4000) + "\n")
+    spres.write(str(Xs[i]) + " " + str(Cs[i]) + "\n")
 
 spres.close()
 G.show()

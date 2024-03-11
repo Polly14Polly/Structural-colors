@@ -28,7 +28,7 @@ podstilkaY = 0
 
 angle = np.pi
 LampSpectrumWL = [1.0, 1000.0]  # Массивы для спектра лампы. Изначально их задал, чтобы было значение по умолчанию.
-LampSpectrum = [0.0001, 0.00001]  # (как раз изначально амплитуда поля была равна 1)
+LampSpectrum = [1, 1]  # (как раз изначально амплитуда поля была равна 1)
 
 
 class Material:
@@ -219,7 +219,7 @@ def triangle_thights(size_x, size_y, r, mat):
     spres.close()
 
 
-def Spectrum(materials, leftGran, rightGran, shag):
+def ScatteringCrossSection(materials, leftGran, rightGran, shag):
     bI = []  # массив с рассеянием
     for i in range(leftGran, rightGran, shag):  # фором пробегаюсь по всем длинам волн (i - длина волны в нм)
         N = 0
@@ -259,13 +259,119 @@ def Spectrum(materials, leftGran, rightGran, shag):
                                                   initial_field=plane_wave)
 
         simulation.run()
-        '''scs = smuthi.postprocessing.far_field.scattered_far_field(i,
-                                                                  particle_list=spheres,
-                                                                  layer_system=two_layers,
-                                                                  )'''
+#electric_field_amplitude()
+
+        '''Farfield = smuthi.postprocessing.far_field.scattered_far_field(
+            vacuum_wavelength = i,
+            particle_list=spheres,
+            layer_system=two_layers,
+            polar_angles ='default',
+            azimuthal_angles ='default',
+            angular_resolution = None,
+            reference_point = None)
+
+        scs = Farfield.integral()'''
+
+        '''scs = smuthi.postprocessing.far_field.extinction_cross_section(
+            initial_field=plane_wave,
+            particle_list=spheres,
+            layer_system=two_layers,
+            extinction_direction = 'reflection'
+        )'''
+
+        '''scs = smuthi.postprocessing.far_field.FarField.electric_field_amplitude(
+            initial_field=plane_wave,
+                                                                       particle_list=spheres,
+                                                                       layer_system=two_layers)'''
+
+        '''scs = smuthi.postprocessing.far_field.extinction_cross_section(initial_field=plane_wave,
+                                                                        particle_list=spheres,
+                                                                        layer_system=two_layers)'''
+
         scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
                                                 particle_list=spheres,
                                                 layer_system=two_layers)
+        scs = scs / (podstilkaX * podstilkaY)
+
+        print(i)  # просто вывод, чтоб следить за процессом
+        print(scs)
+        bI.append(scs)
+        sps.close()
+    return bI
+
+
+def FF(materials, leftGran, rightGran, shag):
+    bI = []  # массив с рассеянием
+    for i in range(leftGran, rightGran, shag):  # фором пробегаюсь по всем длинам волн (i - длина волны в нм)
+        N = 0
+        lampAmplitude = math.sqrt(search_wl(0, len(LampSpectrumWL), LampSpectrumWL, LampSpectrum, i))
+        ns = []
+        js = []
+        sps = open('SpheresList' + str(count) + '.txt', 'r')
+        for mat in materials:
+            ns.append(search_wl(0, mat.length, mat.wl, mat.n, i / 1000))
+            js.append(search_wl(0, mat.length, mat.wl, mat.j, i / 1000))
+        two_layers = smuthi.layers.LayerSystem(thicknesses=[0, 0],  # просто стандартные два полупространства
+                                               refractive_indices=[ns[int(podstilka)] + js[int(podstilka)] * 1j, 1])
+
+        spheres = []  # наделал сферок(чтоб каждая расчитывалась в зависимости от длины волны)
+        line = sps.readline()
+        while (line != ""):
+            N = N + 1
+            spheres.append(
+                smuthi.particles.Sphere(
+                    position=[int(line.split(";")[0]), int(line.split(";")[1]), int(line.split(";")[2])],
+                    refractive_index=ns[int(line.split(";")[3])] + js[int(line.split(";")[3])] * 1j,
+                    radius=int(line.split(";")[2]),
+                    l_max=3)
+            )
+            line = sps.readline()
+
+        plane_wave = smuthi.initial_field.PlaneWave(vacuum_wavelength=i,  # насветил, i - это длина волны
+                                                    polar_angle=angle,
+                                                    azimuthal_angle=0,
+                                                    amplitude=lampAmplitude,
+                                                    polarization=0)
+
+        simulation = smuthi.simulation.Simulation(layer_system=two_layers,
+                                                  particle_list=spheres,
+                                                  solver_type='gmres',
+                                                  solver_tolerance=1e-7,
+                                                  initial_field=plane_wave)
+
+        simulation.run()
+#electric_field_amplitude()
+
+        Farfield = smuthi.postprocessing.far_field.scattered_far_field(
+            vacuum_wavelength = i,
+            particle_list=spheres,
+            layer_system=two_layers,
+            polar_angles ='default',
+            azimuthal_angles ='default',
+            angular_resolution = None,
+            reference_point = None)
+
+        scs = Farfield.integral()
+
+        '''scs = smuthi.postprocessing.far_field.extinction_cross_section(
+            initial_field=plane_wave,
+            particle_list=spheres,
+            layer_system=two_layers,
+            extinction_direction = 'reflection'
+        )'''
+
+        '''scs = smuthi.postprocessing.far_field.FarField.electric_field_amplitude(
+            initial_field=plane_wave,
+                                                                       particle_list=spheres,
+                                                                       layer_system=two_layers)'''
+
+        '''scs = smuthi.postprocessing.far_field.extinction_cross_section(initial_field=plane_wave,
+                                                                        particle_list=spheres,
+                                                                        layer_system=two_layers)'''
+
+        '''scs = ff.total_scattering_cross_section(initial_field=plane_wave,  # evaluate the scattering cross section
+                                                particle_list=spheres,
+                                                layer_system=two_layers)'''
         scs = scs / (podstilkaX * podstilkaY)
 
         print(i)  # просто вывод, чтоб следить за процессом
@@ -296,15 +402,43 @@ while work:
     elif cmds[0] == "":  # Финал программы: если считали пустую строку, то завершаем
         work = False
 
-    elif cmds[0] == "SimulateSpectrum":
+    elif cmds[0] == "ScatteringCrossSection":
         begin = time.time()
-        y = Spectrum(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
+        y = ScatteringCrossSection(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
         x = []
         for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):  # массив иксов, чтоб график построить
             x.append(i)
 
         graf.plot(x, y)  # строю график
-        graf.savefig(str(count) + "section.svg")
+        graf.savefig(str(count) + "_cross_section.png")
+        plot = open(str(count) + 'plot.txt', 'w')
+        for i in range(0, len(x), 1):
+            plot.write(str(x[i]) + " " + str(y[i]) + "\n")
+        plot.close()
+        graf.close()
+
+        out = open('output.txt', 'a')
+        vrem = time.time() - begin
+        out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
+        out.close()
+
+    elif cmds[0] == "FarField":
+        begin = time.time()
+        y = FF(materials, int(cmds[1]), int(cmds[2]), int(cmds[3]))
+        x = []
+        for i in range(int(cmds[1]), int(cmds[2]), int(cmds[3])):  # массив иксов, чтоб график построить
+            x.append(i)
+
+        graf.plot(x, y)  # строю график
+        graf.savefig(str(count) + "_far_field_amplitude.png")
+        graf.close()
+        A = []
+        for YYY in y:
+            a = math.sqrt(YYY[0]**2 + YYY[1]**2)
+            A.append(a)
+        graf.plot(x, A)  # строю график
+        graf.savefig(str(count) + "_far_field_intensity.png")
+
         plot = open(str(count) + 'plot.txt', 'w')
         for i in range(0, len(x), 1):
             plot.write(str(x[i]) + " " + str(y[i]) + "\n")
