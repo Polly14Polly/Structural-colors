@@ -26,6 +26,8 @@ veryNachalo = time.time()
 podstilkaX = 0
 podstilkaY = 0
 
+readAngleDelta = np.pi
+readAngle = np.pi
 angle = np.pi
 LampSpectrumWL = [1.0, 1000.0]  # Массивы для спектра лампы. Изначально их задал, чтобы было значение по умолчанию.
 LampSpectrum = [1, 1]  # (как раз изначально амплитуда поля была равна 1)
@@ -259,7 +261,7 @@ def ScatteringCrossSection(materials, leftGran, rightGran, shag):
                                                   initial_field=plane_wave)
 
         simulation.run()
-#electric_field_amplitude()
+        # electric_field_amplitude()
 
         '''Farfield = smuthi.postprocessing.far_field.scattered_far_field(
             vacuum_wavelength = i,
@@ -340,16 +342,17 @@ def FF(materials, leftGran, rightGran, shag):
                                                   initial_field=plane_wave)
 
         simulation.run()
-#electric_field_amplitude()
-
+        # electric_field_amplitude()
+        start = readAngle - readAngleDelta
+        stop = readAngle + readAngleDelta
         Farfield = smuthi.postprocessing.far_field.scattered_far_field(
-            vacuum_wavelength = i,
+            vacuum_wavelength=i,
             particle_list=spheres,
             layer_system=two_layers,
-            polar_angles ='default',
-            azimuthal_angles ='default',
-            angular_resolution = None,
-            reference_point = None)
+            polar_angles=np.linspace(start, stop, 720),
+            azimuthal_angles=np.linspace(0,np.pi, 720), #2pi будет то же самое, но в два раза больше
+            angular_resolution=None,
+            reference_point=None)
 
         scs = Farfield.integral()
 
@@ -434,12 +437,14 @@ while work:
         graf.close()
         A = []
         for YYY in y:
-            a = math.sqrt(YYY[0]**2 + YYY[1]**2)
+            a = math.sqrt(YYY[0] ** 2 + YYY[1] ** 2)
             A.append(a)
         graf.plot(x, A)  # строю график
         graf.savefig(str(count) + "_far_field_intensity.png")
-
         plot = open(str(count) + 'plot.txt', 'w')
+        for i in range(0, len(x), 1):
+            plot.write(str(x[i]) + " " + str(A[i]) + "\n")
+        plot = open(str(count) + '_amp_plot.txt', 'w')
         for i in range(0, len(x), 1):
             plot.write(str(x[i]) + " " + str(y[i]) + "\n")
         plot.close()
@@ -465,8 +470,14 @@ while work:
     elif cmds[0] == "AddLamp":
         lamp(cmds[1])
 
-    elif cmds[0] == "SetAngle":
+    elif cmds[0] == "SetLampAngle":
         angle = np.pi - float(cmds[1])
+
+    elif cmds[0] == "SetReadAngle":
+        readAngle = float(cmds[1])
+
+    elif cmds[0] == "SetReadAngleDelta":
+        readAngleDelta = float(cmds[1])
 
     elif cmds[0] == "Draw":
         screen = pygame.display.set_mode((podstilkaX, podstilkaY))
