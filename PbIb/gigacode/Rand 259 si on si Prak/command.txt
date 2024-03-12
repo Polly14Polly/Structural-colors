@@ -6,8 +6,13 @@ Podstilka;0
 AddLamp;lamp
 SetReadAngle;0.0
 SetReadAngleDelta;0.39269908169872
+Random;64;6000;6000;259;5;0
+Draw
+FarField;380;781;5
 Next
-Next
+RectNet;8288;8288;1036;1036;259;0
+Draw
+FarField;380;781;5
 Next
 ThightsRectNet;4144;4144;259;0
 Draw
