@@ -15,6 +15,7 @@ def median(f):
 
     return middle
 
+
 def easy_mean(f, s_k=0.2, max_k=0.9, d=1.5):
     # Creating static variable
     if not hasattr(easy_mean, "fit"):
@@ -28,23 +29,25 @@ def easy_mean(f, s_k=0.2, max_k=0.9, d=1.5):
 
     return easy_mean.fit
 
+
 def kalman(f, q=0.25, r=0.7):
     if not hasattr(kalman, "Accumulated_Error"):
         kalman.Accumulated_Error = 1
         kalman.kalman_adc_old = 0
 
-    if abs(f-kalman.kalman_adc_old)/50 > 0.25:
-        Old_Input = f*0.382 + kalman.kalman_adc_old*0.618
+    if abs(f - kalman.kalman_adc_old) / 50 > 0.25:
+        Old_Input = f * 0.382 + kalman.kalman_adc_old * 0.618
     else:
         Old_Input = kalman.kalman_adc_old
 
-    Old_Error_All = (kalman.Accumulated_Error**2 + q**2)**0.5
-    H = Old_Error_All**2/(Old_Error_All**2 + r**2)
+    Old_Error_All = (kalman.Accumulated_Error ** 2 + q ** 2) ** 0.5
+    H = Old_Error_All ** 2 / (Old_Error_All ** 2 + r ** 2)
     kalman_adc = Old_Input + H * (f - Old_Input)
-    kalman.Accumulated_Error = ((1 - H)*Old_Error_All**2)**0.5
+    kalman.Accumulated_Error = ((1 - H) * Old_Error_All ** 2) ** 0.5
     kalman.kalman_adc_old = kalman_adc
 
     return kalman_adc
+
 
 def geom_mean(f, buffer_size=10):
     # Creating buffer
@@ -58,9 +61,10 @@ def geom_mean(f, buffer_size=10):
     # Calculation arithmetic mean
     mean = 1
     for e in arith_mean.buffer: mean *= e
-    mean = mean**(1/len(arith_mean.buffer))
+    mean = mean ** (1 / len(arith_mean.buffer))
 
     return mean
+
 
 def arith_mean(f, buffer_size=10):
     # Creating buffer
@@ -78,46 +82,47 @@ def arith_mean(f, buffer_size=10):
 
     return mean
 
+
 import numpy as np
 import math
 import matplotlib.pyplot as G
-for bi in range(15, 16):
-    read = open(str(bi) + '.txt', 'r')
-    cmd = read.readline()  # прочитал строку
-    Xs = []
-    Ys = []
-    while cmd != "" and cmd != " ":
-        cmd = cmd.replace("\n", "")
 
-        cmd = cmd.replace('\t', ' ')
-        cmds = cmd.split(" ")
-        Xs.append(float(cmds[0]))
-        Ys.append(float(cmds[1]))
-        cmd = read.readline();  # прочитал строку
-    for a in range(0, len(Ys)):
-        Ys[a] = Ys[a]/8000
-    As = []
-    for i in Ys:
-        As.append(median(i))
-    Bs = []
-    for i in As:
-        Bs.append(easy_mean(i))
-    Cs = []
-    for i in Bs:
-        Cs.append(kalman(i))
+read = open('aaa.txt', 'r')
+cmd = read.readline()  # прочитал строку
+Xs = []
+Ys = []
+while cmd != "" and cmd != " ":
+    cmd = cmd.replace("\n", "")
 
-    G.plot(Xs, Ys)
+    cmd = cmd.replace('\t', ' ')
+    cmds = cmd.split(" ")
+    Xs.append(float(cmds[0]))
+    Ys.append(float(cmds[1]))
+    cmd = read.readline();  # прочитал строку
+for a in range(0, len(Ys)):
+    Ys[a] = Ys[a] / 8000
+As = []
+for i in Ys:
+    As.append(median(i))
+Bs = []
+for i in As:
+    Bs.append(easy_mean(i))
+Cs = []
+for i in Bs:
+    Cs.append(kalman(i))
 
-    G.plot(Xs, Cs)
+G.plot(Xs, Ys)
 
-    #G.plot(Xs, Es)
-    #G.plot(Xs, As)
-    #G.plot(Xs, Cs)
+G.plot(Xs, Cs)
+
+# G.plot(Xs, Es)
+# G.plot(Xs, As)
+# G.plot(Xs, Cs)
 
 
-    spres = open(str(bi) + '.1.txt', 'w')
-    for i in range(0, len(Xs)):
-        spres.write(str(Xs[i]) + " " + str(Cs[i]) + "\n")
+spres = open('aaa.1.txt', 'w')
+for i in range(0, len(Xs)):
+    spres.write(str(Xs[i]) + " " + str(Cs[i]) + "\n")
 
-    spres.close()
-    G.show()
+spres.close()
+G.show()

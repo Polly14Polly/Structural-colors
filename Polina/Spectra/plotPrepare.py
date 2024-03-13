@@ -1,6 +1,6 @@
 import matplotlib.pyplot as G
 
-read = open('9.2.txt', 'r')
+read = open('9.txt', 'r')
 cmd = read.readline()
 Xs = []
 Ys = []
@@ -12,8 +12,7 @@ while cmd != "" and cmd != " ":
     Ys.append(float(cmds[1]))
     cmd = read.readline();
 
-
-read = open('12.2.txt', 'r')
+read = open('10.txt', 'r')
 cmd = read.readline()  # прочитал строку
 Ys1 = []
 while cmd != "" and cmd != " ":
@@ -23,7 +22,7 @@ while cmd != "" and cmd != " ":
     Ys1.append(float(cmds[1]))
     cmd = read.readline();  # прочитал строку
 
-read = open('12.1.txt', 'r')
+read = open('12.txt', 'r')
 cmd = read.readline()  # прочитал строку
 Ys2 = []
 while cmd != "" and cmd != " ":
@@ -45,7 +44,6 @@ while cmd != "" and cmd != " ":
 
 read = open('15.txt', 'r')
 cmd = read.readline()  # прочитал строку
-
 Ys4 = []
 while cmd != "" and cmd != " ":
     cmd = cmd.replace("\n", "")
@@ -54,8 +52,24 @@ while cmd != "" and cmd != " ":
     Ys4.append(float(cmds[1]))
     cmd = read.readline();  # прочитал строку
 As = []
-for i in range (0, len(Xs)-1):
-    As.append((Ys1[i] - Ys2[i])/(Ys3[i] - Ys4[i]))
-G.plot(Xs, Ys)
+i = 0
+while i < len(Xs):
+    print(i)
+    try:
+        As.append((Ys1[i] - Ys2[i]) / (Ys3[i] - Ys4[i]))
+    except ArithmeticError:
+        Xs.pop(i)
+        Ys.pop(i)
+        Ys1.pop(i)
+        Ys2.pop(i)
+        Ys3.pop(i)
+        Ys4.pop(i)
+        i -= 1
+    i += 1
+
+#G.plot(Xs, Ys)
 G.plot(Xs, As)
 G.show()
+spres = open('aaa.txt', 'w')
+for i in range(0, len(As)):
+    spres.write(str(Xs[i]) + " " + str(As[i]) + "\n")
