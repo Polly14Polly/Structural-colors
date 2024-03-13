@@ -2,7 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as G
 
-read = open('lamp.txt', 'r')
+read = open('12.1.txt', 'r')
 cmd = read.readline()  # прочитал строку
 Xs = []
 Ys = []

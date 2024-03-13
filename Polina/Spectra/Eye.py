@@ -81,55 +81,43 @@ def arith_mean(f, buffer_size=10):
 import numpy as np
 import math
 import matplotlib.pyplot as G
+for bi in range(15, 16):
+    read = open(str(bi) + '.txt', 'r')
+    cmd = read.readline()  # прочитал строку
+    Xs = []
+    Ys = []
+    while cmd != "" and cmd != " ":
+        cmd = cmd.replace("\n", "")
 
-read = open('13.txt', 'r')
-cmd = read.readline()  # прочитал строку
-Xs = []
-Ys = []
-while cmd != "" and cmd != " ":
-    cmd = cmd.replace("\n", "")
+        cmd = cmd.replace('\t', ' ')
+        cmds = cmd.split(" ")
+        Xs.append(float(cmds[0]))
+        Ys.append(float(cmds[1]))
+        cmd = read.readline();  # прочитал строку
+    for a in range(0, len(Ys)):
+        Ys[a] = Ys[a]/8000
+    As = []
+    for i in Ys:
+        As.append(median(i))
+    Bs = []
+    for i in As:
+        Bs.append(easy_mean(i))
+    Cs = []
+    for i in Bs:
+        Cs.append(kalman(i))
 
-    cmd = cmd.replace('\t', ' ')
-    cmds = cmd.split(" ")
-    Xs.append(float(cmds[0]))
-    Ys.append(float(cmds[1]))
-    cmd = read.readline();  # прочитал строку
-for a in range(0, len(Ys)):
-    Ys[a] = Ys[a]/8000
-As = []
-for i in Ys:
-    As.append(median(i))
-Bs = []
-for i in As:
-    Bs.append(easy_mean(i))
-Cs = []
-for i in Bs:
-    Cs.append(kalman(i))
-'''Ds = []
-for i in Bs:
-    Ds.append(geom_mean(i))
-Es = []
-for i in Bs:
-    Es.append(kalman(i))
-Fs = []
-for i in Es:
-    Fs.append(kalman(i))
-Gs = []
-for i in Fs:
-    Gs.append(median(i))'''
+    G.plot(Xs, Ys)
 
-G.plot(Xs, Ys)
+    G.plot(Xs, Cs)
 
-G.plot(Xs, Cs)
-
-#G.plot(Xs, Es)
-#G.plot(Xs, As)
-#G.plot(Xs, Cs)
+    #G.plot(Xs, Es)
+    #G.plot(Xs, As)
+    #G.plot(Xs, Cs)
 
 
-spres = open('lamp.txt', 'w')
-for i in range(0, len(Xs)):
-    spres.write(str(Xs[i]) + " " + str(Cs[i]) + "\n")
+    spres = open(str(bi) + '.1.txt', 'w')
+    for i in range(0, len(Xs)):
+        spres.write(str(Xs[i]) + " " + str(Cs[i]) + "\n")
 
-spres.close()
-G.show()
+    spres.close()
+    G.show()

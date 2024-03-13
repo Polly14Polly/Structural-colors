@@ -2,12 +2,14 @@ AddMaterial;SiO2_Gao
 AddMaterial;Si_Vuye_20C
 AddMaterial;CdS_Treharne
 AddMaterial;TiO2_Sarkar
-Podstilka;0
+Podstilka;1
 AddLamp;lamp
+SetLampAngle;0.43633231299858
 SetReadAngle;0.0
 SetReadAngleDelta;0.39269908169872
-Next
-Next
+Random;64;6000;6000;259;5;0
+Draw
+FarField;380;781;5
 Next
 ThightsRectNet;4144;4144;259;0
 Draw
