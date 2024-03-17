@@ -384,12 +384,12 @@ def FF(materials, leftGran, rightGran, shag):
     return bI
 
 
-f = open('command.txt', 'r')  # зачитал файл
+f = open('prak simulation/command.txt', 'r')  # зачитал файл
 
 s = open('SpheresList' + str(count) + '.txt', 'w')  # почистил массив(текстовый файл) сфер
 s.truncate()
 s.close()
-s2 = open('output.txt', 'w')  # почистил вывод
+s2 = open('prak simulation/output.txt', 'w')  # почистил вывод
 s2.truncate()
 s2.close()
 
@@ -420,7 +420,7 @@ while work:
         plot.close()
         graf.close()
 
-        out = open('output.txt', 'a')
+        out = open('prak simulation/output.txt', 'a')
         vrem = time.time() - begin
         out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
         out.close()
@@ -450,7 +450,7 @@ while work:
         plot.close()
         graf.close()
 
-        out = open('output.txt', 'a')
+        out = open('prak simulation/output.txt', 'a')
         vrem = time.time() - begin
         out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
         out.close()
@@ -519,7 +519,7 @@ while work:
     else:
         print("Something is creating script ERRORs")
 
-out = open('output.txt', 'a')  # отчёт о времени
+out = open('prak simulation/output.txt', 'a')  # отчёт о времени
 out.write("\n Vsego proshlo " + str(time.time() - veryNachalo))
 out.close()
 pygame.quit()
