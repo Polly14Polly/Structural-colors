@@ -384,12 +384,12 @@ def FF(materials, leftGran, rightGran, shag):
     return bI
 
 
-f = open('prak simulation/command.txt', 'r')  # зачитал файл
+f = open('command.txt', 'r')  # зачитал файл
 
 s = open('SpheresList' + str(count) + '.txt', 'w')  # почистил массив(текстовый файл) сфер
 s.truncate()
 s.close()
-s2 = open('prak simulation/output.txt', 'w')  # почистил вывод
+s2 = open('output.txt', 'w')  # почистил вывод
 s2.truncate()
 s2.close()
 

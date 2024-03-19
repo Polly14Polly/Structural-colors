@@ -2,7 +2,6 @@ AddMaterial;SiO2_Gao
 AddMaterial;Si_Vuye_20C
 AddMaterial;CdS_Treharne
 AddMaterial;TiO2_Sarkar
-
 Podstilka;0
 ThightsRectNet;4800;4800;400;1
 Draw
@@ -31,3 +30,8 @@ Next
 ThightsRectNet;12000;12000;1000;1
 Draw
 ScatteringCrossSection;380;781;5
+Next
+Next
+ThightsRectNet;1560;1560;130;1
+Draw
+ScatteringCrossSection;20;1501;5
