@@ -2,7 +2,7 @@ import statistics
 
 import matplotlib.pyplot as G
 
-read = open('aaa.1.txt', 'r')
+read = open('lamp.txt', 'r')
 cmd = read.readline()
 Xs = []
 Ys = []
@@ -31,7 +31,7 @@ for i in range(380, 781, 5):
     Bs.append(statistics.median(meds))
     meds.clear()
 
-spres = open('aaa.2.txt', 'w')
+spres = open('lampBis.txt', 'w')
 for i in range(0, len(As)):
     spres.write(str(As[i]) + " " + str(Bs[i]) + "\n")
 G.plot(Xs, Ys)

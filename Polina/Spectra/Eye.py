@@ -87,7 +87,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as G
 
-read = open('aaa.txt', 'r')
+read = open('prak.txt', 'r')
 cmd = read.readline()  # прочитал строку
 Xs = []
 Ys = []
@@ -120,7 +120,7 @@ G.plot(Xs, Cs)
 # G.plot(Xs, Cs)
 
 
-spres = open('aaa.1.txt', 'w')
+spres = open('prak.1.txt', 'w')
 for i in range(0, len(Xs)):
     spres.write(str(Xs[i]) + " " + str(Cs[i]) + "\n")
 
