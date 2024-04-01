@@ -166,6 +166,9 @@ def full_random(n, a, b, r, dr, mat):
 
     allspheres = []
 
+    spres = open('SpheresList' + str(count) + '.txt', 'a') #если что-то не так, файл создастся сам
+    spres.close()
+
     spres = open('SpheresList' + str(count) + '.txt', 'r')
     line = spres.readline()
     while (line != ""):
