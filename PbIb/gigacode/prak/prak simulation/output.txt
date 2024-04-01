@@ -28,3 +28,4 @@
 
  Vsego proshlo 283.380952835083
  Vsego proshlo 5.28173041343689
+ Vsego proshlo 1.3129127025604248
