@@ -420,7 +420,7 @@ while work:
         plot.close()
         graf.close()
 
-        out = open('prak simulation/output.txt', 'a')
+        out = open('prak/prak simulation/output.txt', 'a')
         vrem = time.time() - begin
         out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
         out.close()
@@ -450,7 +450,7 @@ while work:
         plot.close()
         graf.close()
 
-        out = open('prak simulation/output.txt', 'a')
+        out = open('prak/prak simulation/output.txt', 'a')
         vrem = time.time() - begin
         out.write("\n" + str(count) + ") Proshlo " + str(vrem) + " secund\n")
         out.close()
@@ -465,7 +465,7 @@ while work:
 
     elif cmds[0] == "AddMaterial":
         materials.append(Material(cmds[1]))
-        mathcolors.append([random.randint(0, 256), random.randint(0, 256), random.randint(0, 256)])
+        mathcolors.append([random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)])
 
     elif cmds[0] == "AddLamp":
         lamp(cmds[1])
@@ -519,7 +519,7 @@ while work:
     else:
         print("Something is creating script ERRORs")
 
-out = open('prak simulation/output.txt', 'a')  # отчёт о времени
+out = open('prak/prak simulation/output.txt', 'a')  # отчёт о времени
 out.write("\n Vsego proshlo " + str(time.time() - veryNachalo))
 out.close()
 pygame.quit()
