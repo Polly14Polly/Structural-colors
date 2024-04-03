@@ -48,3 +48,31 @@
 9) Proshlo 4105.877526760101 secund
 
 10) Proshlo 4127.555531740189 secund
+
+11) Proshlo 4266.234922647476 secund
+
+12) Proshlo 4303.249512195587 secund
+
+13) Proshlo 4294.628678560257 secund
+
+14) Proshlo 4312.908702850342 secund
+
+15) Proshlo 4317.555458784103 secund
+
+16) Proshlo 4336.0522108078 secund
+
+17) Proshlo 4346.8542647361755 secund
+
+18) Proshlo 4407.487566947937 secund
+
+19) Proshlo 4436.663959026337 secund
+
+20) Proshlo 4293.354382514954 secund
+
+21) Proshlo 4155.370738744736 secund
+
+22) Proshlo 4185.9855835437775 secund
+
+23) Proshlo 3901.539186000824 secund
+
+24) Proshlo 3834.5734119415283 secund

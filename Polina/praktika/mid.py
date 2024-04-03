@@ -29,9 +29,9 @@ for i in range(0, len(Xs[0])):
 
 
 G.plot(Xs[0], Bs)
-
-out = open('middle.txt', 'w')
 for i in range(0, len(Xs[0])):
     out.write(str(Xs[0][i]) + " " + str(Bs[i]) + "\n")
+out = open('middle.txt', 'w')
+
 
 G.savefig("middle.png")

@@ -117,11 +117,11 @@ for coord in coords:
         1
     )
 
-    if 1 == 1:
+    if 1 == 0:
         font = pygame.font.SysFont(None, 18)
         img = font.render(f'{coord[2]}', True, (0, 0, 0))
         screen.blit(img, (OFFSET_X + x*GLOBAL_DELTA_X/LOCAL_DELTA_X + 8, 816 - (OFFSET_Y + y*GLOBAL_DELTA_Y/LOCAL_DELTA_Y + 8)))
-if 1 == 1:
+if 1 == 0:
     dk = 0
     for t in title:
         font = pygame.font.SysFont(None, 18)
