@@ -29,3 +29,22 @@
  Vsego proshlo 283.380952835083
  Vsego proshlo 5.28173041343689
  Vsego proshlo 1.3129127025604248
+1) Proshlo 3546.061077594757 secund
+
+2) Proshlo 3473.530483007431 secund
+
+3) Proshlo 3766.7418756484985 secund
+
+4) Proshlo 3536.103139400482 secund
+
+5) Proshlo 4050.5979945659637 secund
+
+6) Proshlo 4197.436317920685 secund
+
+7) Proshlo 4120.355656385422 secund
+
+8) Proshlo 4138.097432851791 secund
+
+9) Proshlo 4105.877526760101 secund
+
+10) Proshlo 4127.555531740189 secund

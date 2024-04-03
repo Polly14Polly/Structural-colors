@@ -1,0 +1,7 @@
+AddMaterial;SiO2_Gao
+AddMaterial;Si_Vuye_20C
+Podstilka;0
+ThightsTriNet;400;400;100;1
+Draw
+ScatteringCrossSection;380;781;20
+Next
