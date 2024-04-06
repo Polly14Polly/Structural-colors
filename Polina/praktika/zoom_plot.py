@@ -2,7 +2,7 @@ import numpy as np
 import math
 import matplotlib.pyplot as G
 
-read = open('3plot.txt', 'r')
+read = open('Folder for mid/3plot.txt', 'r')
 cmd = read.readline()  # прочитал строку
 Xs = []
 Ys = []

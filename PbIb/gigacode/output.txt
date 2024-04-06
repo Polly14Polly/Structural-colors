@@ -1,0 +1,18 @@
+
+1) Proshlo 18.864277124404907 secund
+
+2) Proshlo 59.33078908920288 secund
+
+3) Proshlo 166.17680287361145 secund
+
+4) Proshlo 359.60712480545044 secund
+
+5) Proshlo 700.09921002388 secund
+
+6) Proshlo 1330.630202293396 secund
+
+7) Proshlo 2192.8652291297913 secund
+
+8) Proshlo 3586.0893166065216 secund
+
+ Vsego proshlo 8413.96320939064

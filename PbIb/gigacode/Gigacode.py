@@ -213,8 +213,8 @@ def triangle_thights(size_x, size_y, r, mat):
 
     for i in range(Na):
         for j in range(Nb):
-            arr[i][j][0] = a * i + ((-1) ** (j)) * r / 2  # сдвиг по иксу в зависимости от четности ряда
-            arr[i][j][1] = r * j * np.sqrt(3)  # сдвиг по игреку на корень 3
+            arr[i][j][0] = r + a * i + ((-1) ** (j)) * r / 2  # сдвиг по иксу в зависимости от четности ряда
+            arr[i][j][1] = r + r * j * np.sqrt(3)  # сдвиг по игреку на корень 3
 
     spres = open('SpheresList' + str(count) + '.txt', 'a')
     for i in range(Na):
